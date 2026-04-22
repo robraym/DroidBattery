@@ -1,5 +1,6 @@
 package battery.droid.com.droidbattery;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -276,20 +277,60 @@ public class DroidCommon {
         return spf;
     }
 
-
     public static void updateViewsInfoBattery(Context context, String batteryLevel) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         try {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-            views.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_PX, 80f);
-            views.setTextViewText(R.id.batteryText, batteryLevel + "%");
+            // No Android 16, não podemos mandar apenas o texto.
+            // Precisamos mandar a cor junto para o sistema não "resetar" para a cor anterior.
+            DroidCommon.BatteryCurrent = batteryLevel;
 
-            ComponentName componentName = new ComponentName(context, DroidWidget.class);
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            appWidgetManager.updateAppWidget(componentName, views);
+            // Em vez de atualizar aqui, chamamos o método que manda cor e texto juntos
+            // mas sem entrar em loop infinito.
+            PintarWidgetCompleto(context);
+
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
+    }
+
+    public static void updateViewsColorBattery(Context context, int color) {
+        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        try {
+            // Guardamos a cor desejada para uso no PintarWidgetCompleto
+            DroidCommon.SetInteger(context, "ULTIMA_COR_DEFINIDA", color);
+            PintarWidgetCompleto(context);
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    // NOVO MÉTODO: Centraliza a pintura para não ter erro no Android 16
+    private static void PintarWidgetCompleto(Context context) {
+        try {
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+
+            // Pega a última cor que deveria estar lá (Padrão Branco se não achar)
+            int corParaPintar = context.getSharedPreferences(PREF_ID, Context.MODE_PRIVATE).getInt("ULTIMA_COR_DEFINIDA", Color.WHITE);
+
+            views.setTextColor(R.id.batteryText, corParaPintar);
+            views.setTextViewText(R.id.batteryText, DroidCommon.BatteryCurrent + "%");
+
+            Integer min_width = DroidCommon.GetInteger(context, "MIN_WIDTH");
+            float fontSize = (min_width > 110) ? 50 : 30;
+            views.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, fontSize);
+
+            // Intent do clique com as flags obrigatórias do Android 16
+            Intent intent = new Intent(context, DroidWidget.class);
+            intent.setAction("battery.droid.com.droidbattery.UPDATE");
+            int flags = android.os.Build.VERSION.SDK_INT >= 23 ?
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE :
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+
+            android.app.PendingIntent pi = android.app.PendingIntent.getBroadcast(context, 0, intent, flags);
+            views.setOnClickPendingIntent(R.id.batteryText, pi);
+
+            AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidWidget.class), views);
+        } catch (Exception e) {}
     }
 
     public static void TimeSleep(Integer seg) {
@@ -312,25 +353,7 @@ public class DroidCommon {
         }
     }
 
-    public static void updateViewsColorBattery(Context context, int color) {
-        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
-        try {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-            views.setTextColor(R.id.batteryText, color);
-            Integer min_width = DroidCommon.GetInteger(context, "MIN_WIDTH");
-            if (min_width > 110) {
-                views.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, 50);
-            } else {
-                views.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, 30);
-            }
-            ComponentName componentName = new ComponentName(context, DroidWidget.class);
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            appWidgetManager.updateAppWidget(componentName, views);
-            updateViewsInfoBattery(context, DroidCommon.BatteryCurrent);
-        } catch (Exception ex) {
-            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
-        }
-    }
+
 
     public static boolean NaoPertube(Context context) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));

@@ -31,8 +31,11 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
     }
 
     @Override
-    public void onInit(int i) {
-
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLanguage(Locale.getDefault());
+            // Aqui você pode definir uma velocidade se quiser: tts.setSpeechRate(1.0f);
+        }
     }
 
     @Override
@@ -186,20 +189,19 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
 
     private static void Fala(Context context, String texto) {
         if (DroidCommon.SinteseVozNaoPerturbeAtivado(context)) {
-            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
             Toast.makeText(context, texto, Toast.LENGTH_SHORT).show();
-            tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
-            AguardandoFalar();
+            // Usamos null no Listener se não for dar stopSelf imediatamente
+            tts.speak(texto, TextToSpeech.QUEUE_ADD, null, "ID_" + System.currentTimeMillis());
         }
-        //stopSelf();
     }
 
+    // Remova o loop 'while' daqui. Se você tem outras classes chamando esse método,
+// deixe-o vazio apenas para não dar erro de compilação.
     private static void AguardandoFalar() {
-        while (tts.isSpeaking()) {
-            DroidCommon.TimeSleep(500);
-        }
-        //stopSelf();
+        // O controle agora é assíncrono via UtteranceProgressListener no método Fala.
+        Log.d(DroidCommon.TAG, "Aguardando conclusão da fala via Listener...");
     }
+
     public static BroadcastReceiver batteryPowerReceiver = new BroadcastReceiver() {
         private boolean dispositivoConectado;
         private boolean dispositivoDesconectado;
@@ -221,19 +223,18 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
                 } catch (Exception ex) {
                     Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
                 }
+                // Dentro do seu batteryPowerReceiver
                 if (dispositivoConectado || dispositivoDesconectado) {
-                    try {
-                        DroidCommon.InformaDispositivoConectadoDesconectado = true;
-                        DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
-                        DroidCommon.updateViewsSizeBattery(context);
-                        DroidCommon.onUpdateDroidWidget(context);
-                        DroidCommon.LoopingBateria(context);
-                        DroidMainService.ChamaSinteseVoz(context);
-                    } catch (Exception ex) {
-                        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
-                    } finally {
-                        DroidCommon.InformaDispositivoConectadoDesconectado = false;
-                    }
+                    DroidCommon.InformaDispositivoConectadoDesconectado = true;
+
+                    // 1. Atualiza cor (fica branco ou azul na hora)
+                    DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
+
+                    // 2. Dispara a voz e a animação
+                    DroidMainService.ChamaSinteseVoz(context);
+                    DroidCommon.LoopingBateria(context);
+
+                    DroidCommon.InformaDispositivoConectadoDesconectado = false;
                 }
             }
         }
