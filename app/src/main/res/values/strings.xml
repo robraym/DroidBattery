@@ -8,18 +8,12 @@
 
     <string name="titulo_bateria_carregada">Texto para bateria carregada</string>
     <string name="txt_fala_bateria_carregada">me tira da tomada, carregou tudo</string>
-    <string name="titulo_cor_dispositivo_carregado">Cor do texto para bateria carregada</string>
-<!--    <string name="titulo_valor_dispositivo_carregado">Valor da bateria carregada</string>-->
 
     <string name="titulo_dispositivo_conectado">Texto para dispositivo conectado</string>
     <string name="txt_dispositivo_conectado">opa, agora vai</string>
-    <string name="titulo_cor_dispositivo_conectado">Cor do texto para dispositivo conectado</string>
 
     <string name="titulo_dispositivo_desconectado">Texto para dispositivo desconectado</string>
     <string name="txt_dispositivo_desconectado">sai daqui ô</string>
-    <string name="titulo_cor_dispositivo_desconectado">Cor do texto para dispositivo desconectado</string>
-
-    <string name="titulo_cor_bateria_baixa">Cor do texto para bateria baixa</string>
 
     <string name="titulo_boot_completado">Exibir um alerta</string>
     <string name="spf_boot_completado">Exibir um alerta com as informações de data e hora depois que o dispositivo for reiniciado?</string>

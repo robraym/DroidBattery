@@ -23,19 +23,6 @@
             android:key="falaBateriaCarregada"
             android:summary="@string/txt_fala_bateria_carregada"
             android:title="@string/titulo_bateria_carregada" />
-        <ListPreference
-            android:defaultValue="-16711936"
-            android:entries="@array/arrayCoresTextoPercentualBateria"
-            android:entryValues="@array/arrayCoresTextoPercentualBateriaValues"
-            android:key="corTextoBateriaCarregada"
-            android:title="@string/titulo_cor_dispositivo_carregado" />
-<!--        <ListPreference-->
-<!--            android:defaultValue="100"-->
-<!--            android:summary="100%"-->
-<!--            android:entries="@array/arrayPercentualAtingido"-->
-<!--            android:entryValues="@array/arrayPercentualAtingidoValues"-->
-<!--            android:key="valorTextoBateriaCarregada"-->
-<!--            android:title="@string/titulo_valor_dispositivo_carregado" />-->
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/categoria_dispositivo_conectado">
         <EditTextPreference
@@ -44,12 +31,6 @@
             android:summary="@string/txt_dispositivo_conectado"
             android:title="@string/titulo_dispositivo_conectado" />
 
-        <ListPreference
-            android:defaultValue="-16776961"
-            android:entries="@array/arrayCoresTextoPercentualBateria"
-            android:entryValues="@array/arrayCoresTextoPercentualBateriaValues"
-            android:key="corTextoDispositivoConectado"
-            android:title="@string/titulo_cor_dispositivo_conectado" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/categoria_dispositivo_desconectado">
         <EditTextPreference
@@ -57,21 +38,8 @@
             android:key="dispositivoDesconectado"
             android:summary="@string/txt_dispositivo_desconectado"
             android:title="@string/titulo_dispositivo_desconectado" />
-        <ListPreference
-            android:defaultValue="-1"
-            android:entries="@array/arrayCoresTextoPercentualBateria"
-            android:entryValues="@array/arrayCoresTextoPercentualBateriaValues"
-            android:key="corTextoDispositivoDesconectado"
-            android:title="@string/titulo_cor_dispositivo_desconectado" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/categoria_bateria_baixa">
-        <ListPreference
-            android:defaultValue="-65536"
-            android:entries="@array/arrayCoresTextoPercentualBateria"
-            android:entryValues="@array/arrayCoresTextoPercentualBateriaValues"
-            android:key="corTextoBateriaBaixa"
-            android:title="@string/titulo_cor_bateria_baixa" />
-    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/categoria_nao_perturbe">
         <SwitchPreference
             android:defaultValue="false"

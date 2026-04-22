@@ -30,11 +30,6 @@ public class DroidConfigurationActivity extends PreferenceActivity {
     private Preference falaBateriaCarregada;
     private Preference dispositivoConectado;
     private Preference dispositivoDesconectado;
-    private ListPreference corTextoDispositivoConectado;
-    private ListPreference corTextoBateriaCarregada;
-    public ListPreference valorTextoBateriaCarregada;
-    private ListPreference corTextoDispositivoDesconectado;
-    private ListPreference corTextoBateriaBaixa;
     private MultiSelectListPreference multiSelectListPreference;
 
     @Override
@@ -125,10 +120,6 @@ public class DroidConfigurationActivity extends PreferenceActivity {
             falaBateriaCarregada.setSummary(DroidCommon.PreferenceFalaBateriaCarregada(context));
             falaBateriaCarregada.setOnPreferenceChangeListener(listener);
 
-//            valorTextoBateriaCarregada = (ListPreference) findPreference("valorTextoBateriaCarregada");
-//            valorTextoBateriaCarregada.setOnPreferenceChangeListener(listListener);
-//            listListener.onPreferenceChange(valorTextoBateriaCarregada, valorTextoBateriaCarregada.getValue());
-
             dispositivoConectado = (Preference) findPreference("dispositivoConectado");
             dispositivoConectado.setSummary(DroidCommon.PreferenceDispositivoConectado(context));
             dispositivoConectado.setOnPreferenceChangeListener(listener);
@@ -136,24 +127,6 @@ public class DroidConfigurationActivity extends PreferenceActivity {
             dispositivoDesconectado = (Preference) findPreference("dispositivoDesconectado");
             dispositivoDesconectado.setSummary(DroidCommon.PreferenceDispositivoDesconectado(context));
             dispositivoDesconectado.setOnPreferenceChangeListener(listener);
-
-            corTextoDispositivoConectado = (ListPreference) findPreference("corTextoDispositivoConectado");
-            corTextoDispositivoConectado.setOnPreferenceChangeListener(listListener);
-            listListener.onPreferenceChange(corTextoDispositivoConectado, corTextoDispositivoConectado.getValue());
-
-            corTextoBateriaCarregada = (ListPreference) findPreference("corTextoBateriaCarregada");
-            corTextoBateriaCarregada.setOnPreferenceChangeListener(listListener);
-            listListener.onPreferenceChange(corTextoBateriaCarregada, corTextoBateriaCarregada.getValue());
-
-            corTextoBateriaBaixa = (ListPreference) findPreference("corTextoBateriaBaixa");
-            corTextoBateriaBaixa.setOnPreferenceChangeListener(listListener);
-            listListener.onPreferenceChange(corTextoBateriaBaixa, corTextoBateriaBaixa.getValue());
-
-            corTextoDispositivoDesconectado = (ListPreference) findPreference("corTextoDispositivoDesconectado");
-            corTextoDispositivoDesconectado.setOnPreferenceChangeListener(listListener);
-            listListener.onPreferenceChange(corTextoDispositivoDesconectado, corTextoDispositivoDesconectado.getValue());
-
-
 
             multiSelectListPreference = (MultiSelectListPreference) findPreference("multiSelectListPreference");
             multiSelectListPreference.setEntries(R.array.arrayPercentualAtingido);
