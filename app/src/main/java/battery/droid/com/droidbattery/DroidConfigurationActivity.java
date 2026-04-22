@@ -32,6 +32,7 @@ public class DroidConfigurationActivity extends PreferenceActivity {
     private Preference dispositivoDesconectado;
     private ListPreference corTextoDispositivoConectado;
     private ListPreference corTextoBateriaCarregada;
+    public ListPreference valorTextoBateriaCarregada;
     private ListPreference corTextoDispositivoDesconectado;
     private ListPreference corTextoBateriaBaixa;
     private MultiSelectListPreference multiSelectListPreference;
@@ -44,7 +45,6 @@ public class DroidConfigurationActivity extends PreferenceActivity {
         SetPreference();
         DroidMainService.StartService(context);
     }
-
 
     private void SetPreference() {
         try {
@@ -68,7 +68,6 @@ public class DroidConfigurationActivity extends PreferenceActivity {
                     if (preference.getKey().equals(dispositivoDesconectado.getKey())) {
                         preference.setSummary(newValue.toString());
                     }
-
                     return true;
                 }
             };
@@ -97,14 +96,16 @@ public class DroidConfigurationActivity extends PreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     String stringValue = o.toString();
-
-                    if (preference instanceof ListPreference) {
+                    if (preference.getKey().equals("valorTextoBateriaCarregada")) {
+                        DroidCommon.ValorBateriaCarregada = stringValue;
+                        preference.setSummary(stringValue);
+                    } else  if (preference instanceof ListPreference) {
                         ListPreference listPreference = (ListPreference) preference;
                         int prefIndex = listPreference.findIndexOfValue(stringValue);
                         CharSequence[] labels = listPreference.getEntries();
                         preference.setSummary(labels[prefIndex]);
-                        DroidCommon.updateViewsInfoBattery(context, "0");
-                        DroidCommon.AtualizaCorBateriaPorPreferenceValor(context, o.toString(), preference);
+                        DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
+                        DroidCommon.updateViewsInfoBattery(context,DroidCommon.BatteryCurrent);
                         DroidCommon.LoopingBateria(context);
                     }
                     return true;
@@ -123,6 +124,10 @@ public class DroidConfigurationActivity extends PreferenceActivity {
             falaBateriaCarregada = (Preference) findPreference("falaBateriaCarregada");
             falaBateriaCarregada.setSummary(DroidCommon.PreferenceFalaBateriaCarregada(context));
             falaBateriaCarregada.setOnPreferenceChangeListener(listener);
+
+//            valorTextoBateriaCarregada = (ListPreference) findPreference("valorTextoBateriaCarregada");
+//            valorTextoBateriaCarregada.setOnPreferenceChangeListener(listListener);
+//            listListener.onPreferenceChange(valorTextoBateriaCarregada, valorTextoBateriaCarregada.getValue());
 
             dispositivoConectado = (Preference) findPreference("dispositivoConectado");
             dispositivoConectado.setSummary(DroidCommon.PreferenceDispositivoConectado(context));
@@ -147,6 +152,8 @@ public class DroidConfigurationActivity extends PreferenceActivity {
             corTextoDispositivoDesconectado = (ListPreference) findPreference("corTextoDispositivoDesconectado");
             corTextoDispositivoDesconectado.setOnPreferenceChangeListener(listListener);
             listListener.onPreferenceChange(corTextoDispositivoDesconectado, corTextoDispositivoDesconectado.getValue());
+
+
 
             multiSelectListPreference = (MultiSelectListPreference) findPreference("multiSelectListPreference");
             multiSelectListPreference.setEntries(R.array.arrayPercentualAtingido);

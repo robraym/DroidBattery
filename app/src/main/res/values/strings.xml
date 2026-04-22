@@ -7,15 +7,16 @@
     <string name="titulo_pecentual_atingido">Informar quando atingir o(s) percentual(ais) </string>
 
     <string name="titulo_bateria_carregada">Texto para bateria carregada</string>
-    <string name="txt_fala_bateria_carregada">Bateria carregada, você já pode desconectar do carregador</string>
+    <string name="txt_fala_bateria_carregada">me tira da tomada, carregou tudo</string>
     <string name="titulo_cor_dispositivo_carregado">Cor do texto para bateria carregada</string>
+<!--    <string name="titulo_valor_dispositivo_carregado">Valor da bateria carregada</string>-->
 
     <string name="titulo_dispositivo_conectado">Texto para dispositivo conectado</string>
-    <string name="txt_dispositivo_conectado">Dispositivo conectado</string>
+    <string name="txt_dispositivo_conectado">opa, agora vai</string>
     <string name="titulo_cor_dispositivo_conectado">Cor do texto para dispositivo conectado</string>
 
     <string name="titulo_dispositivo_desconectado">Texto para dispositivo desconectado</string>
-    <string name="txt_dispositivo_desconectado">Dispositivo desconectado</string>
+    <string name="txt_dispositivo_desconectado">sai daqui ô</string>
     <string name="titulo_cor_dispositivo_desconectado">Cor do texto para dispositivo desconectado</string>
 
     <string name="titulo_cor_bateria_baixa">Cor do texto para bateria baixa</string>
@@ -41,6 +42,15 @@
 
 
     <string-array name="arrayPercentualAtingido">
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>35%</item>
+        <item>40%</item>
+        <item>45%</item>
         <item>50%</item>
         <item>55%</item>
         <item>60%</item>
@@ -55,6 +65,15 @@
     </string-array>
 
     <string-array name="arrayPercentualAtingidoValues">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>25</item>
+        <item>30</item>
+        <item>35</item>
+        <item>40</item>
+        <item>45</item>
         <item>50</item>
         <item>55</item>
         <item>60</item>
@@ -71,8 +90,6 @@
     <string-array name="arrayPercentualAtingidoDefaultValues">
         <item>80</item>
     </string-array>
-
-
 
     <string-array name="arrayCoresTextoPercentualBateria">
         <item>Preta</item>

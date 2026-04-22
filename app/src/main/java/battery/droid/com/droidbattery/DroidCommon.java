@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.BatteryManager;
 import android.os.Vibrator;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
@@ -34,6 +33,7 @@ public class DroidCommon {
     public static String BatteryCurrent = "0";
     public static boolean InformaDispositivoConectadoDesconectado;
     public static boolean BateriaCarregada;
+    public static String ValorBateriaCarregada = "100";
 
     public static int ObtemStatusBateria(Context context) {
         int retorno = -1;
@@ -42,6 +42,8 @@ public class DroidCommon {
             Intent batteryStatus = context.registerReceiver(null, ifilter);
             retorno = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + retorno);
+            DroidCommon.BateriaCarregada = retorno == BatteryManager.BATTERY_STATUS_FULL || retorno == BatteryManager.BATTERY_STATUS_NOT_CHARGING || DroidCommon.BatteryCurrent.equals(DroidCommon.ValorBateriaCarregada);
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + DroidCommon.BateriaCarregada);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
@@ -81,6 +83,20 @@ public class DroidCommon {
         }
         return set;
     }
+
+    public static String GetValueList(Context context, String key) {
+        try {
+            // Pega as SharedPreferences padrão do sistema
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+            // O segundo parâmetro ("") é o valor padrão caso nada tenha sido selecionado
+            return sp.getString(key, "");
+        } catch (Exception ex) {
+            Log.e(DroidCommon.TAG, "Erro ao ler ListPreference: " + ex.getMessage());
+            return "";
+        }
+    }
+
 
 
     public static void SetInteger(Context context, String chave, int valor) {
@@ -265,6 +281,7 @@ public class DroidCommon {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         try {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+            views.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_PX, 80f);
             views.setTextViewText(R.id.batteryText, batteryLevel + "%");
 
             ComponentName componentName = new ComponentName(context, DroidWidget.class);
@@ -309,6 +326,7 @@ public class DroidCommon {
             ComponentName componentName = new ComponentName(context, DroidWidget.class);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             appWidgetManager.updateAppWidget(componentName, views);
+            updateViewsInfoBattery(context, DroidCommon.BatteryCurrent);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
@@ -355,7 +373,11 @@ public class DroidCommon {
 
     public static boolean InformarBateriaCarregada(Context context) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
-        return DroidCommon.ObtemStatusBateria(context) == BatteryManager.BATTERY_STATUS_FULL;
+        DroidCommon.ObtemStatusBateria(context);
+        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + DroidCommon.BateriaCarregada);
+        return DroidCommon.BateriaCarregada;
+        //return DroidCommon.ObtemStatusBateria(context) == BatteryManager.BATTERY_STATUS_FULL || DroidCommon.BatteryCurrent.equals(DroidCommon.ValorBateriaCarregada);
+
     }
 
     public static boolean InformarPercentualAtingidoMultiSelectPreference(Context context) {
@@ -418,55 +440,41 @@ public class DroidCommon {
         return retorno;
     }
 
-    public static int PreferenceCorTextoBateria(final Context context, int cor, String key, Integer keyDefault) {
+    public static int PreferenceCorTextoBateria(final Context context, String key) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
-        if (cor != 0) {
-            return cor;
-        }
-        int spf = keyDefault;
+        int cor = -1; // branco
         try {
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-            spf = Integer.parseInt(sp.getString(key, keyDefault.toString()));
+            cor = Integer.parseInt(DroidCommon.GetValueList(context, key ));
+
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
-        return spf;
+        return cor;
     }
 
-    public static void AtualizaCorBateria(Context context) {
-        AtualizaCorBateriaPorPreferenceValor(context, "0", null);
-    }
 
-    public static void AtualizaCorBateriaPorPreferenceValor(Context context, String Cor, Preference preference) {
+
+    public static void AtualizaCorBateriaPorPreferenceValor(Context context) {
+
         boolean dispositivoConectado = DroidCommon.ObtemStatusDispositivoConectado(context);
-        int intCor = Integer.parseInt(Cor);
+
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + dispositivoConectado);
         if (dispositivoConectado) {
-            int statusBateria = DroidCommon.ObtemStatusBateria(context);
-            DroidCommon.BateriaCarregada = statusBateria == BatteryManager.BATTERY_STATUS_FULL;
+            //int statusBateria = DroidCommon.ObtemStatusBateria(context);
+            DroidCommon.ObtemStatusBateria(context);
+            //DroidCommon.BateriaCarregada = statusBateria == BatteryManager.BATTERY_STATUS_FULL || DroidCommon.BatteryCurrent.equals(DroidCommon.ValorBateriaCarregada);
             if (DroidCommon.BateriaCarregada) {
-                //DroidCommon.updateViewsColorBattery(context, Color.GREEN);
-                if (preference == null || preference.getKey().equals("corTextoBateriaCarregada")) {
-                    DroidCommon.updateViewsColorBattery(context, DroidCommon.PreferenceCorTextoBateria(context, intCor, "corTextoBateriaCarregada", -16711936));
-                }
+                DroidCommon.updateViewsColorBattery(context, Color.GREEN);
+
             } else {
-                //DroidCommon.updateViewsColorBattery(context, Color.BLUE);
-                if (preference == null || preference.getKey().equals("corTextoDispositivoConectado")) {
-                    DroidCommon.updateViewsColorBattery(context, DroidCommon.PreferenceCorTextoBateria(context, intCor, "corTextoDispositivoConectado", -16776961));
-                }
+                DroidCommon.updateViewsColorBattery(context, Color.BLUE);
             }
         } else {
             Integer totalBattery = Integer.parseInt(DroidCommon.BatteryCurrent);
             if (totalBattery <= 20) {
-                //DroidCommon.updateViewsColorBattery(context, Color.RED);
-                if (preference == null || preference.getKey().equals("corTextoBateriaBaixa")) {
-                    DroidCommon.updateViewsColorBattery(context, DroidCommon.PreferenceCorTextoBateria(context, intCor, "corTextoBateriaBaixa", -65536));
-                }
+                DroidCommon.updateViewsColorBattery(context, Color.BLUE);
             } else {
-                //DroidCommon.updateViewsColorBattery(context, Color.WHITE);
-                if (preference == null || preference.getKey().equals("corTextoDispositivoDesconectado")) {
-                    DroidCommon.updateViewsColorBattery(context, DroidCommon.PreferenceCorTextoBateria(context, intCor, "corTextoDispositivoDesconectado", -1));
-                }
+                DroidCommon.updateViewsColorBattery(context, Color.WHITE);
             }
         }
         DroidCommon.updateViewsInfoBattery(context, DroidCommon.BatteryCurrent);

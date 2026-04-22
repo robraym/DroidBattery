@@ -13,6 +13,8 @@ import android.widget.RemoteViews;
 
 import java.util.Locale;
 
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+
 /**
  * Created by Robson on 02/05/2017.
  */
@@ -20,22 +22,43 @@ import java.util.Locale;
 public class DroidWidget extends AppWidgetProvider {
     private static final String ACTION_BATTERY_UPDATE = "battery.droid.com.droidbattery.UPDATE";
 
+    public static String getActionBatteryUpdate() {
+        return ACTION_BATTERY_UPDATE;
+    }
+
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        super.onDeleted(context, appWidgetIds);
+    }
+
+    @Override
+    public void onRestored(Context context, int[] oldWidgetIds, int[] newWidgetIds) {
+        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        super.onRestored(context, oldWidgetIds, newWidgetIds);
+
+    }
+
     @Override
     public void onEnabled(Context context) {
-        super.onEnabled(context);
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        super.onEnabled(context);
+
     }
 
     @Override
     public void onDisabled(Context context) {
-        super.onDisabled(context);
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        super.onDisabled(context);
+
     }
 
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
-        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+
         try {
             RemoteViews updateViews =
                     new RemoteViews(context.getPackageName(), R.layout.widget_layout);
@@ -55,7 +78,7 @@ public class DroidWidget extends AppWidgetProvider {
                 updateViews.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, 30);
             }
 
-            appWidgetManager.updateAppWidget(appWidgetId, updateViews);
+            //appWidgetManager.updateAppWidget(appWidgetId, updateViews);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
@@ -89,19 +112,19 @@ public class DroidWidget extends AppWidgetProvider {
     protected PendingIntent getPendingSelfIntent(Context context, String action) {
         Intent intent = new Intent(context, getClass());
         intent.setAction(action);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
+        return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        super.onReceive(context, intent);
+
         try {
             if (ACTION_BATTERY_UPDATE.equals(intent.getAction())) {
                 DroidCommon.Vibrar(context, 50);
-                DroidCommon.updateViewsInfoBattery(context, "0");
-                DroidCommon.AtualizaCorBateria(context);
                 DroidCommon.LoopingBateria(context);
+                DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
                 DroidMainService.ChamaSinteseVoz(context);
             }
         } catch (Exception ex) {

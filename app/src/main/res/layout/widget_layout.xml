@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     
-    <TextView 
+    <TextView
         android:textIsSelectable="false"
         android:id="@+id/batteryText"
         android:layout_height="match_parent"

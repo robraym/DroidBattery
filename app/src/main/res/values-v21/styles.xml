@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" >
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">false</item>
         <item name="android:windowActionBar">true</item>

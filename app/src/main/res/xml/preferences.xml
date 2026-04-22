@@ -23,13 +23,19 @@
             android:key="falaBateriaCarregada"
             android:summary="@string/txt_fala_bateria_carregada"
             android:title="@string/titulo_bateria_carregada" />
-
         <ListPreference
             android:defaultValue="-16711936"
             android:entries="@array/arrayCoresTextoPercentualBateria"
             android:entryValues="@array/arrayCoresTextoPercentualBateriaValues"
             android:key="corTextoBateriaCarregada"
             android:title="@string/titulo_cor_dispositivo_carregado" />
+<!--        <ListPreference-->
+<!--            android:defaultValue="100"-->
+<!--            android:summary="100%"-->
+<!--            android:entries="@array/arrayPercentualAtingido"-->
+<!--            android:entryValues="@array/arrayPercentualAtingidoValues"-->
+<!--            android:key="valorTextoBateriaCarregada"-->
+<!--            android:title="@string/titulo_valor_dispositivo_carregado" />-->
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/categoria_dispositivo_conectado">
         <EditTextPreference
