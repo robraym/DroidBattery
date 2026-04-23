@@ -10,8 +10,8 @@ android {
         applicationId "battery.droid.com.droidbattery"
         minSdk 24
         targetSdk 35
-        versionCode 68
-        versionName "14"
+        versionCode 69
+        versionName "15"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
