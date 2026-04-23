@@ -8,7 +8,10 @@
             android:defaultValue="true"
             android:key="spf_ativarSinteseVoz"
             android:summary="@string/spf_ativar_sintese_voz"
-            android:title="@string/titulo_ativar_voz_google"></SwitchPreference>
+
+            >
+
+        </SwitchPreference>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/categoria_selecione_percentual">
@@ -17,22 +20,19 @@
             android:title="@string/titulo_pecentual_atingido" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/categoria_bateria_carregada">
+    <PreferenceCategory android:title="@string/categoria_personalizar_mensagens">
         <EditTextPreference
             android:defaultValue="@string/txt_fala_bateria_carregada"
             android:key="falaBateriaCarregada"
             android:summary="@string/txt_fala_bateria_carregada"
             android:title="@string/titulo_bateria_carregada" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/categoria_dispositivo_conectado">
+
         <EditTextPreference
             android:defaultValue="@string/txt_dispositivo_conectado"
             android:key="dispositivoConectado"
             android:summary="@string/txt_dispositivo_conectado"
             android:title="@string/titulo_dispositivo_conectado" />
 
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/categoria_dispositivo_desconectado">
         <EditTextPreference
             android:defaultValue="@string/txt_dispositivo_desconectado"
             android:key="dispositivoDesconectado"
@@ -45,8 +45,7 @@
             android:defaultValue="false"
             android:dependency="spf_ativarSinteseVoz"
             android:key="quiet"
-            android:summary="@string/quietSum"
-            android:title="@string/quietHours" />
+            android:summary="@string/quietSum" />
         <battery.droid.com.droidbattery.DroidTime
             android:defaultValue="23:00"
             android:dependency="quiet"

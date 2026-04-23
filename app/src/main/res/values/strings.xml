@@ -1,38 +1,30 @@
 <resources>
     <string name="app_name">Level Battery</string>
-    <string name="categoria_sintese_voz">SÍNTESE DE VOZ</string>
-    <string name="titulo_ativar_voz_google">Ativar a síntese de Voz da Google</string>
-    <string name="spf_ativar_sintese_voz">Ativar a síntese de Voz da Google para informar quando a bateria estiver totalmente carregada, conectar e desconectar da energia?</string>
 
-    <string name="titulo_pecentual_atingido">Informar quando atingir o(s) percentual(ais) </string>
+    <string name="categoria_sintese_voz">ALERTAS DE VOZ</string>
+    <string name="spf_ativar_sintese_voz">Avisar status de carga e energia</string>
 
-    <string name="titulo_bateria_carregada">Texto para bateria carregada</string>
+    <string name="categoria_selecione_percentual">NÍVEIS DE CARGA</string>
+    <string name="titulo_pecentual_atingido">Percentuais de alerta</string>
+
+    <string name="categoria_personalizar_mensagens">PERSONALIZAR MENSAGENS</string>
+    <string name="titulo_bateria_carregada">Carga Completa</string>
     <string name="txt_fala_bateria_carregada">me tira da tomada, carregou tudo</string>
 
-    <string name="titulo_dispositivo_conectado">Texto para dispositivo conectado</string>
+    <string name="titulo_dispositivo_conectado">Energia conectada</string>
     <string name="txt_dispositivo_conectado">opa, agora vai</string>
 
-    <string name="titulo_dispositivo_desconectado">Texto para dispositivo desconectado</string>
+    <string name="titulo_dispositivo_desconectado">Energia desconectada</string>
     <string name="txt_dispositivo_desconectado">sai daqui ô</string>
 
-    <string name="titulo_boot_completado">Exibir um alerta</string>
-    <string name="spf_boot_completado">Exibir um alerta com as informações de data e hora depois que o dispositivo for reiniciado?</string>
+    <string name="categoria_nao_perturbe">NÃO PERTURBE</string>
 
-    <string name="titulo_fala_boot_completado">Voz reiniciar o dispositivo</string>
-    <string name="spf_fala_boot_completado">Ativar a síntese de Voz do Google para informar depois que o dispositivo for reiniciado?</string>
+    <string name="quietSum">Silenciar durante o período</string>
 
-    <string name="quietSum">Não pertube entre as horas abaixo</string>
-    <string name="quietHours">Não perturbe</string>
-    <string name="startTime">Hora inicial</string>
-    <string name="stopTime">Hora final</string>
+    <string name="startTime">Início</string>
+    <string name="stopTime">Término</string>
     <string name="set">OK</string>
     <string name="cancel">Cancelar</string>
-    <string name="categoria_selecione_percentual">SELECIONE O(S) PERCENTUAL(AIS)</string>
-    <string name="categoria_bateria_carregada">BATERIA CARREGADA</string>
-    <string name="categoria_dispositivo_conectado">DISPOSITIVO CONECTADO</string>
-    <string name="categoria_dispositivo_desconectado">DISPOSITIVO DESCONECTADO</string>
-    <string name="categoria_bateria_baixa">BATERIA BAIXA</string>
-    <string name="categoria_nao_perturbe">NAO PERTURBE</string>
 
 
     <string-array name="arrayPercentualAtingido">
@@ -112,5 +104,6 @@
         <item>-1</item>
         <item>-256</item>
     </string-array>
+
 
 </resources>

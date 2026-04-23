@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'battery.droid.com.droidbattery'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "battery.droid.com.droidbattery"
         minSdk 24
-        targetSdk 34
-        versionCode 63
-        versionName "11.3"
+        targetSdk 35
+        versionCode 67
+        versionName "13"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

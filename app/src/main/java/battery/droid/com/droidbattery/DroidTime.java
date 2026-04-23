@@ -65,17 +65,30 @@ public class DroidTime extends DialogPreference {
 
 	@Override
 	public void onBindView(View view) {
-		View widgetLayout;
-		int childCounter = 0;
-		do {
-			widgetLayout = ((ViewGroup) view).getChildAt(childCounter);
-			childCounter++;
-		} while (widgetLayout.getId() != android.R.id.widget_frame);
-		((ViewGroup) widgetLayout).removeAllViews();
-		timeDisplay = new TextView(widgetLayout.getContext());
-		timeDisplay.setText(toString());
-		((ViewGroup) widgetLayout).addView(timeDisplay);
-		super.onBindView(view);
+		super.onBindView(view); // Chamar o super primeiro garante que o título seja criado
+
+		// 1. AJUSTAR O TÍTULO (Início / Término)
+		// Buscamos o ID nativo do Android para o título da preferência
+		TextView titleView = (TextView) view.findViewById(android.R.id.title);
+		if (titleView != null) {
+			// Forçamos o tamanho 16sp para igualar aos outros
+			titleView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16);
+			// O Google não usa negrito nesses títulos, então garantimos o estilo normal
+			titleView.setTypeface(null, android.graphics.Typeface.NORMAL);
+		}
+
+		// 2. AJUSTAR A HORA (Ex: 23:00)
+		ViewGroup widgetLayout = (ViewGroup) view.findViewById(android.R.id.widget_frame);
+		if (widgetLayout != null) {
+			widgetLayout.removeAllViews();
+			timeDisplay = new TextView(widgetLayout.getContext());
+			timeDisplay.setText(toString());
+
+			// Também colocamos 16sp na hora para manter a harmonia visual
+			timeDisplay.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16);
+
+			widgetLayout.addView(timeDisplay);
+		}
 	}
 
 	@Override
