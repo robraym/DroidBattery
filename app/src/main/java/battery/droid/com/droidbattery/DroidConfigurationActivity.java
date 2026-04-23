@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import android.graphics.drawable.ColorDrawable;
+import android.widget.ListView;
+
 
 /**
  * Created by Robson on 02/05/2017.
@@ -38,8 +41,14 @@ public class DroidConfigurationActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         SetPreference();
+
+        ListView listView = getListView();
+        listView.setDivider(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        listView.setDividerHeight(0);
+
         DroidMainService.StartService(context);
     }
+
 
     private void SetPreference() {
         try {
