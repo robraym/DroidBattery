@@ -52,6 +52,8 @@
             android:label="RestartServiceWhenStopped">
             <intent-filter>
                 <action android:name="battery.droid.com.droidbattery.ACTION_RESTART_SERVICE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
