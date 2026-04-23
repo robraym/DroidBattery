@@ -9,13 +9,13 @@
 
     <string name="categoria_personalizar_mensagens">PERSONALIZAR MENSAGENS</string>
     <string name="titulo_bateria_carregada">Carga Completa</string>
-    <string name="txt_fala_bateria_carregada">me tira da tomada, carregou tudo</string>
+    <string name="txt_fala_bateria_carregada">Bateria carregada, já pode retirar do carregador</string>
 
     <string name="titulo_dispositivo_conectado">Energia conectada</string>
-    <string name="txt_dispositivo_conectado">opa, agora vai</string>
+    <string name="txt_dispositivo_conectado">Carregamento iniciado com sucesso</string>
 
     <string name="titulo_dispositivo_desconectado">Energia desconectada</string>
-    <string name="txt_dispositivo_desconectado">sai daqui ô</string>
+    <string name="txt_dispositivo_desconectado">Carregamento foi interrompido</string>
 
     <string name="categoria_nao_perturbe">NÃO PERTURBE</string>
 
