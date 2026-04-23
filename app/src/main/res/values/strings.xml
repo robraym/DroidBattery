@@ -16,6 +16,9 @@
 
     <string name="titulo_dispositivo_desconectado">Energia desconectada</string>
     <string name="txt_dispositivo_desconectado">Carregamento foi interrompido</string>
+    <string name="titulo_restaurar_mensagens_padrao">Restaurar mensagens padrão</string>
+    <string name="resumo_restaurar_mensagens_padrao">Voltar aos textos originais de aviso</string>
+    <string name="mensagens_restauradas_padrao">Mensagens restauradas com sucesso</string>
 
     <string name="categoria_nao_perturbe">NÃO PERTURBE</string>
 

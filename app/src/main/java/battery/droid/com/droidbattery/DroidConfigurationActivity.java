@@ -33,6 +33,7 @@ public class DroidConfigurationActivity extends PreferenceActivity {
     private Preference falaBateriaCarregada;
     private Preference dispositivoConectado;
     private Preference dispositivoDesconectado;
+    private Preference restaurarMensagensPadrao;
     private MultiSelectListPreference multiSelectListPreference;
 
     @Override
@@ -159,6 +160,26 @@ public class DroidConfigurationActivity extends PreferenceActivity {
             dispositivoDesconectado = (Preference) findPreference("dispositivoDesconectado");
             dispositivoDesconectado.setSummary(DroidCommon.PreferenceDispositivoDesconectado(context));
             dispositivoDesconectado.setOnPreferenceChangeListener(listener);
+
+            restaurarMensagensPadrao = findPreference("restaurarMensagensPadrao");
+            restaurarMensagensPadrao.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(DroidConfigurationActivity.this).edit();
+                    editor.putString("falaBateriaCarregada", getString(R.string.txt_fala_bateria_carregada));
+                    editor.putString("dispositivoConectado", getString(R.string.txt_dispositivo_conectado));
+                    editor.putString("dispositivoDesconectado", getString(R.string.txt_dispositivo_desconectado));
+                    editor.commit();
+
+                    falaBateriaCarregada.setSummary(getString(R.string.txt_fala_bateria_carregada));
+                    dispositivoConectado.setSummary(getString(R.string.txt_dispositivo_conectado));
+                    dispositivoDesconectado.setSummary(getString(R.string.txt_dispositivo_desconectado));
+
+                    Toast.makeText(DroidConfigurationActivity.this, R.string.mensagens_restauradas_padrao,
+                            Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
 
             multiSelectListPreference = (MultiSelectListPreference) findPreference("multiSelectListPreference");
             multiSelectListPreference.setEntries(R.array.arrayPercentualAtingido);

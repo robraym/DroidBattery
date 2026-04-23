@@ -38,6 +38,11 @@
             android:key="dispositivoDesconectado"
             android:summary="@string/txt_dispositivo_desconectado"
             android:title="@string/titulo_dispositivo_desconectado" />
+
+        <Preference
+            android:key="restaurarMensagensPadrao"
+            android:summary="@string/resumo_restaurar_mensagens_padrao"
+            android:title="@string/titulo_restaurar_mensagens_padrao" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/categoria_nao_perturbe">
