@@ -1,7 +1,6 @@
 package battery.droid.com.droidbattery;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -601,26 +601,74 @@ public class DroidConfigurationActivity extends Activity {
             checked[i] = selected.contains(values[i]);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.titulo_pecentual_atingido)
-                .setMultiChoiceItems(entries, checked, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        if (isChecked) {
-                            selected.add(values[which]);
-                        } else {
-                            selected.remove(values[which]);
-                        }
+        final Dialog dialog = new Dialog(this);
+        LinearLayout container = createDialogContainer();
+
+        TextView titleView = createDialogTitle(getString(R.string.titulo_pecentual_atingido));
+        container.addView(titleView, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        TextView hintView = createDialogMessage("Escolha os níveis que devem gerar alerta.");
+        hintView.setPadding(0, dp(4), 0, dp(14));
+        container.addView(hintView, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        ScrollView listScroll = new ScrollView(this);
+        listScroll.setFillViewport(false);
+        LinearLayout list = new LinearLayout(this);
+        list.setOrientation(LinearLayout.VERTICAL);
+        listScroll.addView(list, new ScrollView.LayoutParams(
+                ScrollView.LayoutParams.MATCH_PARENT,
+                ScrollView.LayoutParams.WRAP_CONTENT));
+
+        for (int i = 0; i < values.length; i++) {
+            final String value = values[i];
+            CheckBox checkBox = createPercentCheckBox(entries[i], checked[i]);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        selected.add(value);
+                    } else {
+                        selected.remove(value);
                     }
-                })
-                .setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        savePercentValues(selected);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+                }
+            });
+            list.addView(checkBox, new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    dp(48)));
+        }
+
+        container.addView(listScroll, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(390)));
+
+        LinearLayout actions = createDialogActions();
+        TextView cancel = createDialogButton(getString(R.string.cancel));
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        actions.addView(cancel);
+
+        TextView ok = createDialogButton(getString(R.string.set));
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                savePercentValues(selected);
+                dialog.dismiss();
+            }
+        });
+        actions.addView(ok);
+        container.addView(actions, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        showStyledDialog(dialog, container);
     }
 
     private void savePercentValues(Set<String> selected) {
@@ -648,20 +696,56 @@ public class DroidConfigurationActivity extends Activity {
         editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         editText.setText(preferences.getString(key, defaultValue));
         editText.setSelection(editText.getText().length());
-        editText.setPadding(dp(18), dp(8), dp(18), dp(8));
+        editText.setPadding(dp(16), dp(12), dp(16), dp(12));
+        editText.setMinLines(3);
+        editText.setTextColor(COLOR_PRIMARY_TEXT);
+        editText.setHintTextColor(COLOR_SECONDARY_TEXT);
+        editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, dp(17));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            editText.setBackground(createRoundedBackground(COLOR_DIALOG_PICKER, 18));
+        } else {
+            editText.setBackgroundColor(COLOR_DIALOG_PICKER);
+        }
 
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setView(editText)
-                .setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        preferences.edit().putString(key, editText.getText().toString()).apply();
-                        refreshSummaries();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        final Dialog dialog = new Dialog(this);
+        LinearLayout container = createDialogContainer();
+        container.addView(createDialogTitle(title), new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        TextView hintView = createDialogMessage("Edite a mensagem que será falada pelo app.");
+        hintView.setPadding(0, dp(4), 0, dp(14));
+        container.addView(hintView, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        container.addView(editText, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        LinearLayout actions = createDialogActions();
+        TextView cancel = createDialogButton(getString(R.string.cancel));
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        actions.addView(cancel);
+
+        TextView ok = createDialogButton(getString(R.string.set));
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                preferences.edit().putString(key, editText.getText().toString()).apply();
+                refreshSummaries();
+                dialog.dismiss();
+            }
+        });
+        actions.addView(ok);
+        container.addView(actions, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        showStyledDialog(dialog, container);
     }
 
     private void showTimeDialog(final String key, String title, String defaultValue) {
@@ -803,6 +887,85 @@ public class DroidConfigurationActivity extends Activity {
         setTextSize(button, 15);
         button.setPadding(dp(18), dp(10), dp(4), dp(10));
         return button;
+    }
+
+    private LinearLayout createDialogContainer() {
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(dp(24), dp(22), dp(24), dp(16));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            container.setBackground(createRoundedBackground(COLOR_DIALOG, 28));
+        } else {
+            container.setBackgroundColor(COLOR_DIALOG);
+        }
+        return container;
+    }
+
+    private TextView createDialogTitle(String title) {
+        TextView titleView = new TextView(this);
+        titleView.setText(title);
+        titleView.setTextColor(COLOR_PRIMARY_TEXT);
+        titleView.setTypeface(Typeface.DEFAULT);
+        titleView.setLineSpacing(dp(1), 1.0f);
+        setTextSize(titleView, 22);
+        return titleView;
+    }
+
+    private TextView createDialogMessage(String message) {
+        TextView messageView = new TextView(this);
+        messageView.setText(message);
+        messageView.setTextColor(COLOR_SECONDARY_TEXT);
+        messageView.setLineSpacing(dp(1), 1.0f);
+        setTextSize(messageView, 15);
+        return messageView;
+    }
+
+    private LinearLayout createDialogActions() {
+        LinearLayout actions = new LinearLayout(this);
+        actions.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        actions.setPadding(0, dp(18), 0, 0);
+        return actions;
+    }
+
+    private CheckBox createPercentCheckBox(String text, boolean checked) {
+        CheckBox checkBox = new CheckBox(this);
+        checkBox.setText(text);
+        checkBox.setChecked(checked);
+        checkBox.setTextColor(COLOR_PRIMARY_TEXT);
+        checkBox.setTypeface(Typeface.DEFAULT);
+        checkBox.setGravity(Gravity.CENTER_VERTICAL);
+        checkBox.setPadding(0, 0, 0, 0);
+        checkBox.setButtonTintList(new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{}
+                },
+                new int[]{
+                        COLOR_BLUE,
+                        Color.rgb(178, 180, 188)
+                }));
+        setTextSize(checkBox, 18);
+        return checkBox;
+    }
+
+    private void showStyledDialog(Dialog dialog, View contentView) {
+        dialog.setContentView(contentView);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        dialog.show();
+        Window shownWindow = dialog.getWindow();
+        if (shownWindow != null) {
+            WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+            params.copyFrom(shownWindow.getAttributes());
+            params.width = getResources().getDisplayMetrics().widthPixels - dp(56);
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            params.dimAmount = 0.62f;
+            shownWindow.setAttributes(params);
+            shownWindow.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            shownWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
     }
 
     private void styleNumberPicker(NumberPicker picker) {
