@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Level Battery</string>
+    <string name="configuracoes_titulo">Configurações</string>
+    <string name="configuracoes_subtitulo">Ajuste alertas, mensagens e horários com um visual mais limpo.</string>
 
     <string name="categoria_sintese_voz">ALERTAS DE VOZ</string>
     <string name="spf_ativar_sintese_voz">Avisar status de carga e energia</string>
@@ -9,15 +11,18 @@
 
     <string name="categoria_personalizar_mensagens">PERSONALIZAR MENSAGENS</string>
     <string name="titulo_bateria_carregada">Carga Completa</string>
-    <string name="txt_fala_bateria_carregada">Bateria carregada, já pode retirar do carregador</string>
+    <string name="txt_fala_bateria_carregada">Carga completa. Você pode desconectar o carregador.</string>
 
     <string name="titulo_dispositivo_conectado">Energia conectada</string>
-    <string name="txt_dispositivo_conectado">Carregamento iniciado com sucesso</string>
+    <string name="txt_dispositivo_conectado">Carregador conectado.</string>
 
     <string name="titulo_dispositivo_desconectado">Energia desconectada</string>
-    <string name="txt_dispositivo_desconectado">Carregamento foi interrompido</string>
+    <string name="txt_dispositivo_desconectado">Carregador desconectado.</string>
     <string name="titulo_restaurar_mensagens_padrao">Restaurar mensagens padrão</string>
     <string name="resumo_restaurar_mensagens_padrao">Voltar aos textos originais de aviso</string>
+    <string name="acao_restaurar">Restaurar</string>
+    <string name="confirmar_restaurar_mensagens">Restaurar mensagens padrão?</string>
+    <string name="descricao_confirmar_restaurar_mensagens">As mensagens personalizadas serão substituídas pelos textos originais.</string>
     <string name="mensagens_restauradas_padrao">Mensagens restauradas com sucesso</string>
 
     <string name="categoria_nao_perturbe">NÃO PERTURBE</string>

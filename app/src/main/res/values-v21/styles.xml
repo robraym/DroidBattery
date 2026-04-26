@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" >
-        <!-- Customize your theme here. -->
-        <item name="android:windowNoTitle">false</item>
-        <item name="android:windowActionBar">true</item>
-        <item name="android:windowBackground">@color/colorPrimaryDark</item>
+    <style name="AppTheme" parent="@android:style/Theme.Material">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@color/oneUiBackground</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:colorControlActivated">@color/colorAccent</item>
+        <item name="android:colorControlHighlight">@color/colorAccent</item>
+        <item name="android:colorButtonNormal">@color/oneUiControlNormal</item>
+        <item name="android:statusBarColor">@color/oneUiBackground</item>
+        <item name="android:navigationBarColor">@color/oneUiBackground</item>
+        <item name="android:switchStyle">@style/DroidBlueSwitch</item>
+    </style>
+
+    <style name="DroidBlueSwitch" parent="@android:style/Widget.Material.CompoundButton.Switch">
+        <item name="android:thumbTint">@color/switch_thumb_tint</item>
+        <item name="android:trackTint">@color/switch_track_tint</item>
     </style>
 </resources>

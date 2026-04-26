@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<color name="colorPrimary">#FFFFFF</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#FFFFFF</color>
-    <color name="colorLighBlue2">#0336FF</color>
+    <color name="colorPrimary">#11131A</color>
+    <color name="colorPrimaryDark">#11131A</color>
+    <color name="colorAccent">#4285F4</color>
+    <color name="colorLighBlue2">#4285F4</color>
+    <color name="oneUiBackground">#11131A</color>
+    <color name="oneUiSurface">#FF1A1D26</color>
+    <color name="oneUiSurfacePressed">#FF1B2744</color>
+    <color name="oneUiTextPrimary">#FFF3F6FB</color>
+    <color name="oneUiTextSecondary">#FFA7B0C0</color>
+    <color name="oneUiSection">#FF4285F4</color>
+    <color name="oneUiStroke">#26FFFFFF</color>
+    <color name="oneUiControlNormal">#FF6E7787</color>
 </resources>

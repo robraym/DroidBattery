@@ -3,10 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
     <PreferenceCategory
         android:key="telaConfig"
+        android:layout="@layout/preference_category_oneui"
         android:title="@string/categoria_sintese_voz">
         <SwitchPreference
             android:defaultValue="true"
             android:key="spf_ativarSinteseVoz"
+            android:layout="@layout/preference_oneui"
             android:summary="@string/spf_ativar_sintese_voz"
 
             >
@@ -14,53 +16,67 @@
         </SwitchPreference>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/categoria_selecione_percentual">
+    <PreferenceCategory
+        android:layout="@layout/preference_category_oneui"
+        android:title="@string/categoria_selecione_percentual">
         <MultiSelectListPreference
             android:key="multiSelectListPreference"
+            android:layout="@layout/preference_oneui"
             android:title="@string/titulo_pecentual_atingido" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/categoria_personalizar_mensagens">
+    <PreferenceCategory
+        android:layout="@layout/preference_category_oneui"
+        android:title="@string/categoria_personalizar_mensagens">
         <EditTextPreference
             android:defaultValue="@string/txt_fala_bateria_carregada"
             android:key="falaBateriaCarregada"
+            android:layout="@layout/preference_oneui"
             android:summary="@string/txt_fala_bateria_carregada"
             android:title="@string/titulo_bateria_carregada" />
 
         <EditTextPreference
             android:defaultValue="@string/txt_dispositivo_conectado"
             android:key="dispositivoConectado"
+            android:layout="@layout/preference_oneui"
             android:summary="@string/txt_dispositivo_conectado"
             android:title="@string/titulo_dispositivo_conectado" />
 
         <EditTextPreference
             android:defaultValue="@string/txt_dispositivo_desconectado"
             android:key="dispositivoDesconectado"
+            android:layout="@layout/preference_oneui"
             android:summary="@string/txt_dispositivo_desconectado"
             android:title="@string/titulo_dispositivo_desconectado" />
 
         <Preference
             android:key="restaurarMensagensPadrao"
+            android:layout="@layout/preference_oneui"
             android:summary="@string/resumo_restaurar_mensagens_padrao"
             android:title="@string/titulo_restaurar_mensagens_padrao" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/categoria_nao_perturbe">
+    <PreferenceCategory
+        android:layout="@layout/preference_category_oneui"
+        android:title="@string/categoria_nao_perturbe">
         <SwitchPreference
             android:defaultValue="false"
             android:dependency="spf_ativarSinteseVoz"
             android:key="quiet"
+            android:layout="@layout/preference_oneui"
             android:summary="@string/quietSum" />
         <battery.droid.com.droidbattery.DroidTime
             android:defaultValue="23:00"
             android:dependency="quiet"
             android:key="startTime"
+            android:layout="@layout/preference_oneui"
             android:showDefault="true"
             android:title="@string/startTime" />
         <battery.droid.com.droidbattery.DroidTime
             android:defaultValue="09:00"
             android:dependency="quiet"
             android:key="stopTime"
+            android:layout="@layout/preference_oneui"
             android:showDefault="true"
             android:title="@string/stopTime" />
     </PreferenceCategory>
