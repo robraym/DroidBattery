@@ -1,0 +1,65 @@
+# Política de Privacidade - App Lock
+
+Última atualização: 27 de abril de 2026
+
+O App Lock foi criado para ajudar o usuário a proteger o acesso a aplicativos escolhidos no próprio dispositivo, utilizando autenticação por digital, senha, PIN ou outro método de bloqueio configurado no Android.
+
+## Coleta de dados
+
+O App Lock não coleta, armazena, vende ou compartilha dados pessoais do usuário.
+
+O aplicativo não envia informações para servidores externos e não utiliza serviços de análise, publicidade ou rastreamento.
+
+## Dados armazenados no dispositivo
+
+O App Lock pode armazenar localmente, apenas no próprio aparelho, as configurações necessárias para o funcionamento da proteção, como:
+
+- Lista de aplicativos escolhidos para proteção.
+- Estado temporário de desbloqueio de um aplicativo após autenticação.
+- Configurações necessárias para ativar a proteção.
+
+Essas informações ficam armazenadas localmente no dispositivo e não são transmitidas para terceiros.
+
+## Uso do Serviço de Acessibilidade
+
+O App Lock utiliza o Serviço de Acessibilidade do Android para identificar quando um aplicativo protegido é aberto.
+
+Esse recurso é usado exclusivamente para exibir a tela de autenticação antes de permitir o acesso ao aplicativo protegido.
+
+O App Lock não utiliza o Serviço de Acessibilidade para ler textos, mensagens, senhas, conversas, conteúdo da tela ou informações digitadas pelo usuário.
+
+## Uso da autenticação biométrica
+
+O App Lock utiliza os recursos nativos de autenticação do Android para solicitar digital, senha, PIN ou outro método configurado no aparelho.
+
+O App Lock não acessa, coleta ou armazena dados biométricos. A validação é feita pelo próprio sistema Android.
+
+## Permissão de administrador do dispositivo
+
+O App Lock pode solicitar permissão de administrador do dispositivo para dificultar a desinstalação não autorizada do aplicativo enquanto a proteção estiver ativa.
+
+Essa permissão é usada somente para proteger o próprio App Lock contra remoção sem autorização.
+
+O usuário pode desativar essa permissão nas configurações do Android antes de desinstalar o aplicativo.
+
+## Compartilhamento de dados
+
+O App Lock não compartilha dados com terceiros.
+
+## Segurança
+
+Como o App Lock não envia dados para servidores externos, as informações de configuração permanecem no próprio aparelho do usuário.
+
+Ainda assim, recomendamos manter o dispositivo atualizado e protegido por senha, PIN ou biometria.
+
+## Crianças
+
+O App Lock não é direcionado especificamente a crianças e não coleta informações pessoais de crianças.
+
+## Alterações nesta política
+
+Esta política pode ser atualizada para refletir melhorias no aplicativo ou exigências legais. A data de atualização será alterada quando houver mudanças relevantes.
+
+## Contato
+
+Em caso de dúvidas sobre esta Política de Privacidade, entre em contato pelo canal informado na página do aplicativo na Google Play.
