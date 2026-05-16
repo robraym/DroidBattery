@@ -495,7 +495,7 @@ public class DroidCommon {
         } else {
             Integer totalBattery = Integer.parseInt(DroidCommon.BatteryCurrent);
             if (totalBattery <= 20) {
-                DroidCommon.updateViewsColorBattery(context, Color.BLUE);
+                DroidCommon.updateViewsColorBattery(context, Color.RED);
             } else {
                 DroidCommon.updateViewsColorBattery(context, Color.WHITE);
             }
