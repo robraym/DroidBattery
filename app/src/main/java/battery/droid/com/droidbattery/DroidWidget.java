@@ -3,15 +3,10 @@ package battery.droid.com.droidbattery;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
-import android.widget.RemoteViews;
-
-import java.util.Locale;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
 
@@ -60,25 +55,8 @@ public class DroidWidget extends AppWidgetProvider {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
 
         try {
-            RemoteViews updateViews =
-                    new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-            String msg =
-                    String.format(Locale.getDefault(),
-                            "%d-%d",
-                            newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT),
-                            newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
-
-            //updateViews.setTextViewText(R.id.batteryText, msg);
-
             DroidCommon.SetInteger(context, "MIN_WIDTH", newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
-
-            if (newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) > 110) {
-                updateViews.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, 50);
-            } else {
-                updateViews.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, 30);
-            }
-
-            //appWidgetManager.updateAppWidget(appWidgetId, updateViews);
+            DroidCommon.refreshBatteryWidget(context);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
@@ -94,14 +72,7 @@ public class DroidWidget extends AppWidgetProvider {
     private void ListenerOnClick(Context context, AppWidgetManager appWidgetManager) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         try {
-            RemoteViews remoteViews;
-            ComponentName watchWidget;
-
-            remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-            watchWidget = new ComponentName(context, DroidWidget.class);
-
-            remoteViews.setOnClickPendingIntent(R.id.batteryText, getPendingSelfIntent(context, ACTION_BATTERY_UPDATE));
-            appWidgetManager.updateAppWidget(watchWidget, remoteViews);
+            DroidCommon.refreshBatteryWidget(context);
 
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());

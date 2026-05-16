@@ -189,20 +189,7 @@ public class DroidCommon {
     public static void updateViewsSizeBattery(Context context) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         try {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-
-            Integer min_width = DroidCommon.GetInteger(context, "MIN_WIDTH");
-
-            if (min_width > 110) {
-                views.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, 50);
-            } else {
-                views.setTextViewTextSize(R.id.batteryText, TypedValue.COMPLEX_UNIT_DIP, 30);
-            }
-
-            ComponentName componentName = new ComponentName(context, DroidWidget.class);
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            appWidgetManager.updateAppWidget(componentName, views);
-
+             refreshBatteryWidget(context);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
@@ -283,11 +270,28 @@ public class DroidCommon {
             // No Android 16, não podemos mandar apenas o texto.
             // Precisamos mandar a cor junto para o sistema não "resetar" para a cor anterior.
             DroidCommon.BatteryCurrent = batteryLevel;
+            saveLastBatteryLevel(context, batteryLevel);
 
             // Em vez de atualizar aqui, chamamos o método que manda cor e texto juntos
             // mas sem entrar em loop infinito.
             PintarWidgetCompleto(context);
 
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    public static void refreshBatteryWidget(Context context) {
+        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
+        try {
+            String batteryLevel = getCurrentBatteryLevel(context);
+            if (!batteryLevel.isEmpty()) {
+                DroidCommon.BatteryCurrent = batteryLevel;
+                saveLastBatteryLevel(context, batteryLevel);
+            } else {
+                DroidCommon.BatteryCurrent = getLastBatteryLevel(context);
+            }
+            PintarWidgetCompleto(context);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }
@@ -311,9 +315,14 @@ public class DroidCommon {
 
             // Pega a última cor que deveria estar lá (Padrão Branco se não achar)
             int corParaPintar = context.getSharedPreferences(PREF_ID, Context.MODE_PRIVATE).getInt("ULTIMA_COR_DEFINIDA", Color.WHITE);
+            String batteryText = DroidCommon.BatteryCurrent;
+            if (batteryText == null || batteryText.trim().isEmpty()) {
+                batteryText = getLastBatteryLevel(context);
+                DroidCommon.BatteryCurrent = batteryText;
+            }
 
             views.setTextColor(R.id.batteryText, corParaPintar);
-            views.setTextViewText(R.id.batteryText, DroidCommon.BatteryCurrent + "%");
+            views.setTextViewText(R.id.batteryText, batteryText + "%");
 
             Integer min_width = DroidCommon.GetInteger(context, "MIN_WIDTH");
             float fontSize = (min_width > 110) ? 50 : 30;
@@ -331,6 +340,48 @@ public class DroidCommon {
 
             AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidWidget.class), views);
         } catch (Exception e) {}
+    }
+
+    private static String getCurrentBatteryLevel(Context context) {
+        try {
+            Intent batteryStatus = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+            if (batteryStatus == null) {
+                return "";
+            }
+
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
+            if (level < 0 || scale <= 0) {
+                return "";
+            }
+
+            int percent = Math.round((level * 100f) / scale);
+            return String.valueOf(percent);
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+            return "";
+        }
+    }
+
+    private static void saveLastBatteryLevel(Context context, String batteryLevel) {
+        try {
+            context.getSharedPreferences(PREF_ID, Context.MODE_PRIVATE)
+                    .edit()
+                    .putString("ULTIMO_PERCENTUAL_BATERIA", batteryLevel)
+                    .commit();
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    private static String getLastBatteryLevel(Context context) {
+        try {
+            return context.getSharedPreferences(PREF_ID, Context.MODE_PRIVATE)
+                    .getString("ULTIMO_PERCENTUAL_BATERIA", DroidCommon.BatteryCurrent);
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+            return DroidCommon.BatteryCurrent;
+        }
     }
 
     public static void TimeSleep(Integer seg) {
