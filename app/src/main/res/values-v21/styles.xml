@@ -12,11 +12,5 @@
         <item name="android:colorButtonNormal">@color/oneUiControlNormal</item>
         <item name="android:statusBarColor">@color/oneUiBackground</item>
         <item name="android:navigationBarColor">@color/oneUiBackground</item>
-        <item name="android:switchStyle">@style/DroidBlueSwitch</item>
-    </style>
-
-    <style name="DroidBlueSwitch" parent="@android:style/Widget.Material.CompoundButton.Switch">
-        <item name="android:thumbTint">@color/switch_thumb_tint</item>
-        <item name="android:trackTint">@color/switch_track_tint</item>
     </style>
 </resources>

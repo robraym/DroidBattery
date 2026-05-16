@@ -13,3 +13,29 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local Android Studio/generated files that are not part of the app source.
+/.idea/.gitignore
+/.idea/.name
+/.idea/AndroidProjectSystem.xml
+/.idea/compiler.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/migrations.xml
+/.idea/vcs.xml
+/app/release/
+
+# Leftovers generated while testing UI/resource variants.
+/app/src/main/res/color/switch_thumb_tint.xml
+/app/src/main/res/color/switch_track_tint.xml
+/app/src/main/res/drawable/ic_launcher_background.xml
+/app/src/main/res/drawable/ic_launcher_foreground.xml
+/app/src/main/res/drawable/preference_oneui_background.xml
+/app/src/main/res/layout/preference_category_oneui.xml
+/app/src/main/res/layout/preference_oneui.xml
+/app/src/main/res/layout/settings_header.xml
+/app/src/main/res/mipmap-hdpi/mipmap-*/
+/app/src/main/res/values-night/
+/app/src/main/res/values-night-v21/
+/app/src/main/res/values-night-v23/
+/app/src/main/res/xml/backup_rules.xml
+/app/src/main/res/xml/data_extraction_rules.xml
