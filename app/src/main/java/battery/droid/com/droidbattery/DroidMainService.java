@@ -64,6 +64,8 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
             registerReceiver(batteryPowerReceiver, new IntentFilter(Intent.ACTION_POWER_CONNECTED));
             registerReceiver(batteryPowerReceiver, new IntentFilter(Intent.ACTION_POWER_DISCONNECTED));
 
+            DroidCommon.refreshBatteryWidget(context);
+            DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
 
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
@@ -97,6 +99,8 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         super.onStartCommand(intent, flags, startId);
+        DroidCommon.refreshBatteryWidget(this);
+        DroidCommon.AtualizaCorBateriaPorPreferenceValor(this);
         DroidCommon.TimeSleep(2000);
         return START_STICKY;
     }
@@ -189,9 +193,13 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
 
     private static void Fala(Context context, String texto) {
         if (DroidCommon.SinteseVozNaoPerturbeAtivado(context)) {
-            Toast.makeText(context, texto, Toast.LENGTH_SHORT).show();
-            // Usamos null no Listener se não for dar stopSelf imediatamente
-            tts.speak(texto, TextToSpeech.QUEUE_ADD, null, "ID_" + System.currentTimeMillis());
+            if (tts == null) {
+                DroidSpeechHelper.speak(context, texto);
+            } else {
+                Toast.makeText(context, texto, Toast.LENGTH_SHORT).show();
+                // Usamos null no Listener se não for dar stopSelf imediatamente
+                tts.speak(texto, TextToSpeech.QUEUE_ADD, null, "ID_" + System.currentTimeMillis());
+            }
         }
     }
 

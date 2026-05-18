@@ -41,6 +41,9 @@ public class DroidCommon {
         try {
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = context.registerReceiver(null, ifilter);
+            if (batteryStatus == null) {
+                return retorno;
+            }
             retorno = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + retorno);
             DroidCommon.BateriaCarregada = retorno == BatteryManager.BATTERY_STATUS_FULL || retorno == BatteryManager.BATTERY_STATUS_NOT_CHARGING || DroidCommon.BatteryCurrent.equals(DroidCommon.ValorBateriaCarregada);
@@ -284,16 +287,48 @@ public class DroidCommon {
     public static void refreshBatteryWidget(Context context) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         try {
-            String batteryLevel = getCurrentBatteryLevel(context);
-            if (!batteryLevel.isEmpty()) {
-                DroidCommon.BatteryCurrent = batteryLevel;
-                saveLastBatteryLevel(context, batteryLevel);
-            } else {
+            if (!refreshBatteryStateFromSystem(context)) {
                 DroidCommon.BatteryCurrent = getLastBatteryLevel(context);
             }
             PintarWidgetCompleto(context);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    public static boolean refreshBatteryStateFromSystem(Context context) {
+        try {
+            Intent batteryStatus = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+            if (batteryStatus == null) {
+                return false;
+            }
+
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
+            if (level >= 0 && scale > 0) {
+                int percent = Math.round((level * 100f) / scale);
+                DroidCommon.BatteryCurrent = String.valueOf(percent);
+                saveLastBatteryLevel(context, DroidCommon.BatteryCurrent);
+            }
+
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            int plugged = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+            DroidCommon.BateriaCarregada =
+                    status == BatteryManager.BATTERY_STATUS_FULL ||
+                            status == BatteryManager.BATTERY_STATUS_NOT_CHARGING ||
+                            DroidCommon.BatteryCurrent.equals(DroidCommon.ValorBateriaCarregada);
+            if (!DroidCommon.InformaDispositivoConectadoDesconectado) {
+                DroidCommon.SetBoolean(context, "dispositivoConectado", plugged != 0);
+            }
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) +
+                    " level=" + DroidCommon.BatteryCurrent +
+                    " plugged=" + plugged +
+                    " status=" + status);
+
+            return level >= 0 && scale > 0;
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+            return false;
         }
     }
 
@@ -305,6 +340,29 @@ public class DroidCommon {
             PintarWidgetCompleto(context);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    public static void handlePowerConnectionChanged(Context context, String action) {
+        Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + action);
+        boolean dispositivoConectado = Intent.ACTION_POWER_CONNECTED.equals(action);
+        boolean dispositivoDesconectado = Intent.ACTION_POWER_DISCONNECTED.equals(action);
+
+        if (!dispositivoConectado && !dispositivoDesconectado) {
+            return;
+        }
+
+        try {
+            DroidCommon.SetBoolean(context, "dispositivoConectado", dispositivoConectado);
+            DroidCommon.SetBoolean(context, "dispositivoDesconectado", dispositivoDesconectado);
+            DroidCommon.InformaDispositivoConectadoDesconectado = true;
+            DroidCommon.refreshBatteryWidget(context);
+            DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
+            DroidMainService.ChamaSinteseVoz(context);
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        } finally {
+            DroidCommon.InformaDispositivoConectadoDesconectado = false;
         }
     }
 
@@ -323,6 +381,8 @@ public class DroidCommon {
 
             views.setTextColor(R.id.batteryText, corParaPintar);
             views.setTextViewText(R.id.batteryText, batteryText + "%");
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) +
+                    " widget=" + batteryText + "% cor=" + corParaPintar);
 
             Integer min_width = DroidCommon.GetInteger(context, "MIN_WIDTH");
             float fontSize = (min_width > 110) ? 50 : 30;
@@ -339,27 +399,71 @@ public class DroidCommon {
             views.setOnClickPendingIntent(R.id.batteryText, pi);
 
             AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidWidget.class), views);
+            PintarWidgetVisual(context, batteryText);
+            PintarWidgetIcone(context, batteryText);
         } catch (Exception e) {}
     }
 
-    private static String getCurrentBatteryLevel(Context context) {
+    private static void PintarWidgetVisual(Context context, String batteryText) {
         try {
-            Intent batteryStatus = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-            if (batteryStatus == null) {
-                return "";
-            }
+            int percent = parseBatteryPercent(batteryText);
+            boolean charging = DroidCommon.ObtemStatusDispositivoConectado(context);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_battery_visual_layout);
 
-            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
-            if (level < 0 || scale <= 0) {
-                return "";
-            }
+            views.setTextViewText(R.id.batteryVisualPercent, batteryText + "%");
+            views.setTextViewText(R.id.batteryVisualTitle, getBatteryVisualTitle(context, percent, charging));
+            views.setImageViewResource(R.id.batteryVisualIcon, R.mipmap.ic_widget_battery_app_cutout);
+            views.setProgressBar(R.id.batteryVisualProgress, 100, Math.max(0, Math.min(100, percent)), false);
 
-            int percent = Math.round((level * 100f) / scale);
-            return String.valueOf(percent);
+            Intent intent = new Intent(context, DroidBatteryImageWidget.class);
+            intent.setAction("battery.droid.com.droidbattery.UPDATE");
+            int flags = android.os.Build.VERSION.SDK_INT >= 23 ?
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE :
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+            PendingIntent pi = PendingIntent.getBroadcast(context, 2, intent, flags);
+            views.setOnClickPendingIntent(R.id.batteryVisualCard, pi);
+
+            AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidBatteryImageWidget.class), views);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
-            return "";
+        }
+    }
+
+    private static void PintarWidgetIcone(Context context, String batteryText) {
+        try {
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_battery_icon_layout);
+
+            views.setTextViewText(R.id.batteryIconWidgetPercent, batteryText + "%");
+
+            Intent intent = new Intent(context, DroidBatteryIconWidget.class);
+            intent.setAction("battery.droid.com.droidbattery.UPDATE");
+            int flags = android.os.Build.VERSION.SDK_INT >= 23 ?
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE :
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+            PendingIntent pi = PendingIntent.getBroadcast(context, 3, intent, flags);
+            views.setOnClickPendingIntent(R.id.batteryIconWidgetRoot, pi);
+
+            AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidBatteryIconWidget.class), views);
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    private static String getBatteryVisualTitle(Context context, int percent, boolean charging) {
+        if (charging) {
+            return context.getString(R.string.widget_carregando);
+        }
+        if (percent >= 0 && percent <= 20) {
+            return context.getString(R.string.widget_bateria_baixa);
+        }
+        return context.getString(R.string.widget_bateria);
+    }
+
+    private static int parseBatteryPercent(String batteryText) {
+        try {
+            return Integer.parseInt(batteryText);
+        } catch (Exception ex) {
+            return 0;
         }
     }
 
@@ -530,6 +634,7 @@ public class DroidCommon {
 
     public static void AtualizaCorBateriaPorPreferenceValor(Context context) {
 
+        DroidCommon.refreshBatteryStateFromSystem(context);
         boolean dispositivoConectado = DroidCommon.ObtemStatusDispositivoConectado(context);
 
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + dispositivoConectado);

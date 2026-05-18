@@ -1,11 +1,13 @@
 package battery.droid.com.droidbattery;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
@@ -16,6 +18,9 @@ import static android.app.PendingIntent.FLAG_IMMUTABLE;
 
 public class DroidWidget extends AppWidgetProvider {
     private static final String ACTION_BATTERY_UPDATE = "battery.droid.com.droidbattery.UPDATE";
+    private static final String ACTION_WIDGET_REFRESH = "battery.droid.com.droidbattery.WIDGET_REFRESH";
+    private static final long WIDGET_REFRESH_INTERVAL_DISCONNECTED = 15 * 60 * 1000L;
+    private static final long WIDGET_REFRESH_INTERVAL_CHARGING = 60 * 1000L;
 
     public static String getActionBatteryUpdate() {
         return ACTION_BATTERY_UPDATE;
@@ -39,6 +44,8 @@ public class DroidWidget extends AppWidgetProvider {
     public void onEnabled(Context context) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         super.onEnabled(context);
+        scheduleNextWidgetRefresh(context);
+        DroidCommon.refreshBatteryWidget(context);
 
     }
 
@@ -46,6 +53,7 @@ public class DroidWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         super.onDisabled(context);
+        cancelWidgetRefresh(context);
 
     }
 
@@ -56,6 +64,7 @@ public class DroidWidget extends AppWidgetProvider {
 
         try {
             DroidCommon.SetInteger(context, "MIN_WIDTH", newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
+            scheduleNextWidgetRefresh(context);
             DroidCommon.refreshBatteryWidget(context);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
@@ -66,6 +75,7 @@ public class DroidWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         super.onUpdate(context, appWidgetManager, appWidgetIds);
+        scheduleNextWidgetRefresh(context);
         ListenerOnClick(context, appWidgetManager);
     }
 
@@ -97,6 +107,60 @@ public class DroidWidget extends AppWidgetProvider {
                 DroidCommon.LoopingBateria(context);
                 DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
                 DroidMainService.ChamaSinteseVoz(context);
+            } else if (ACTION_WIDGET_REFRESH.equals(intent.getAction()) ||
+                    Intent.ACTION_POWER_CONNECTED.equals(intent.getAction()) ||
+                    Intent.ACTION_POWER_DISCONNECTED.equals(intent.getAction())) {
+                boolean powerEvent = Intent.ACTION_POWER_CONNECTED.equals(intent.getAction()) ||
+                        Intent.ACTION_POWER_DISCONNECTED.equals(intent.getAction());
+                if (powerEvent) {
+                    DroidCommon.handlePowerConnectionChanged(context, intent.getAction());
+                }
+                DroidCommon.refreshBatteryWidget(context);
+                DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
+                scheduleNextWidgetRefresh(context);
+            }
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    private static PendingIntent getWidgetRefreshPendingIntent(Context context) {
+        Intent intent = new Intent(context, DroidWidget.class);
+        intent.setAction(ACTION_WIDGET_REFRESH);
+        return PendingIntent.getBroadcast(
+                context,
+                1,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
+    }
+
+    private static void scheduleNextWidgetRefresh(Context context) {
+        try {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager == null) {
+                return;
+            }
+
+            DroidCommon.refreshBatteryStateFromSystem(context);
+            boolean charging = DroidCommon.ObtemStatusDispositivoConectado(context);
+            long interval = charging ? WIDGET_REFRESH_INTERVAL_CHARGING : WIDGET_REFRESH_INTERVAL_DISCONNECTED;
+            PendingIntent pendingIntent = getWidgetRefreshPendingIntent(context);
+            long nextRefresh = SystemClock.elapsedRealtime() + interval;
+            alarmManager.cancel(pendingIntent);
+            alarmManager.set(
+                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    nextRefresh,
+                    pendingIntent);
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    private static void cancelWidgetRefresh(Context context) {
+        try {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null) {
+                alarmManager.cancel(getWidgetRefreshPendingIntent(context));
             }
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());

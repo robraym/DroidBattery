@@ -36,14 +36,50 @@
             android:enabled="true" />
 
         <receiver android:name=".DroidWidget"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/widget_bateria">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="battery.droid.com.droidbattery.UPDATE" />
+                <action android:name="battery.droid.com.droidbattery.WIDGET_REFRESH" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".DroidBatteryImageWidget"
+            android:exported="true"
+            android:label="@string/widget_bateria_visual">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="battery.droid.com.droidbattery.UPDATE" />
+                <action android:name="battery.droid.com.droidbattery.WIDGET_REFRESH" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_visual_info" />
+        </receiver>
+
+        <receiver
+            android:name=".DroidBatteryIconWidget"
+            android:exported="true"
+            android:label="@string/widget_bateria_icone">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="battery.droid.com.droidbattery.UPDATE" />
+                <action android:name="battery.droid.com.droidbattery.WIDGET_REFRESH" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_icon_info" />
         </receiver>
 
         <receiver

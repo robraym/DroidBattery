@@ -32,16 +32,9 @@ public class DroidSetStatusBatteryReceiver extends BroadcastReceiver {
             }
             if (dispositivoConectado || dispositivoDesconectado) {
                 try {
-                    DroidCommon.InformaDispositivoConectadoDesconectado = true;
-                    DroidCommon.updateViewsSizeBattery(context);
-                    DroidCommon.onUpdateDroidWidget(context);
-                    DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
-                    DroidCommon.LoopingBateria(context);
-                    DroidMainService.ChamaSinteseVoz(context);
+                    DroidCommon.handlePowerConnectionChanged(context, intent.getAction());
                 } catch (Exception ex) {
                     Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
-                } finally {
-                    DroidCommon.InformaDispositivoConectadoDesconectado = false;
                 }
             }
         }
