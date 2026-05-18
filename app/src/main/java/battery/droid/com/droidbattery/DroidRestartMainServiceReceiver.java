@@ -16,6 +16,7 @@ public class DroidRestartMainServiceReceiver extends BroadcastReceiver {
         try {
             DroidCommon.refreshBatteryWidget(context);
             DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
+            DroidWidget.scheduleNextWidgetRefresh(context);
             DroidMainService.StartService(context);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());

@@ -20,7 +20,7 @@ public class DroidWidget extends AppWidgetProvider {
     private static final String ACTION_BATTERY_UPDATE = "battery.droid.com.droidbattery.UPDATE";
     private static final String ACTION_WIDGET_REFRESH = "battery.droid.com.droidbattery.WIDGET_REFRESH";
     private static final long WIDGET_REFRESH_INTERVAL_DISCONNECTED = 15 * 60 * 1000L;
-    private static final long WIDGET_REFRESH_INTERVAL_CHARGING = 60 * 1000L;
+    private static final long WIDGET_REFRESH_INTERVAL_CHARGING = 30 * 1000L;
 
     public static String getActionBatteryUpdate() {
         return ACTION_BATTERY_UPDATE;
@@ -134,7 +134,7 @@ public class DroidWidget extends AppWidgetProvider {
                 PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
-    private static void scheduleNextWidgetRefresh(Context context) {
+    public static void scheduleNextWidgetRefresh(Context context) {
         try {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             if (alarmManager == null) {
@@ -147,10 +147,17 @@ public class DroidWidget extends AppWidgetProvider {
             PendingIntent pendingIntent = getWidgetRefreshPendingIntent(context);
             long nextRefresh = SystemClock.elapsedRealtime() + interval;
             alarmManager.cancel(pendingIntent);
-            alarmManager.set(
-                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    nextRefresh,
-                    pendingIntent);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                alarmManager.setAndAllowWhileIdle(
+                        AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        nextRefresh,
+                        pendingIntent);
+            } else {
+                alarmManager.set(
+                        AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        nextRefresh,
+                        pendingIntent);
+            }
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }

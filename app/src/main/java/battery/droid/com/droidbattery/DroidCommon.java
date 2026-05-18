@@ -344,6 +344,10 @@ public class DroidCommon {
     }
 
     public static void handlePowerConnectionChanged(Context context, String action) {
+        handlePowerConnectionChanged(context, action, true);
+    }
+
+    public static void handlePowerConnectionChanged(Context context, String action, boolean speak) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " " + action);
         boolean dispositivoConectado = Intent.ACTION_POWER_CONNECTED.equals(action);
         boolean dispositivoDesconectado = Intent.ACTION_POWER_DISCONNECTED.equals(action);
@@ -358,7 +362,10 @@ public class DroidCommon {
             DroidCommon.InformaDispositivoConectadoDesconectado = true;
             DroidCommon.refreshBatteryWidget(context);
             DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
-            DroidMainService.ChamaSinteseVoz(context);
+            DroidWidget.scheduleNextWidgetRefresh(context);
+            if (speak) {
+                DroidMainService.ChamaSinteseVoz(context);
+            }
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         } finally {

@@ -12,6 +12,7 @@ public class DroidBatteryImageWidget extends AppWidgetProvider {
     public void onEnabled(Context context) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         super.onEnabled(context);
+        DroidWidget.scheduleNextWidgetRefresh(context);
         DroidCommon.refreshBatteryWidget(context);
     }
 
@@ -19,6 +20,7 @@ public class DroidBatteryImageWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
         super.onUpdate(context, appWidgetManager, appWidgetIds);
+        DroidWidget.scheduleNextWidgetRefresh(context);
         DroidCommon.refreshBatteryWidget(context);
     }
 
@@ -38,6 +40,7 @@ public class DroidBatteryImageWidget extends AppWidgetProvider {
                 DroidCommon.handlePowerConnectionChanged(context, intent.getAction());
             } else {
                 DroidCommon.refreshBatteryWidget(context);
+                DroidWidget.scheduleNextWidgetRefresh(context);
             }
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());

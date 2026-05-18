@@ -29,6 +29,11 @@
     <string name="widget_bateria_icone">Bateria Icone 1x1</string>
     <string name="widget_carregando">Carregando</string>
     <string name="widget_bateria_baixa">Bateria baixa</string>
+    <string name="monitor_bateria_ativo">Monitor de bateria ativo</string>
+    <string name="monitor_bateria_status">Bateria atual: %1$s</string>
+    <string name="monitor_bateria_canal">Monitor de bateria</string>
+    <string name="monitor_bateria_canal_descricao">Mantém alertas de voz e widgets de bateria atualizados.</string>
+    <string name="monitor_bateria_tipo_servico">Monitoramento contínuo de bateria, widgets e alertas de voz.</string>
 
     <string name="categoria_nao_perturbe">NÃO PERTURBE</string>
 

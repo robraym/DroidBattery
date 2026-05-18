@@ -20,6 +20,9 @@ public class DroidSetStatusBatteryReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable())+ " " + " ACTION BOOT or MY_PACKAGE_REPLACED ");
+            DroidCommon.refreshBatteryWidget(context);
+            DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
+            DroidWidget.scheduleNextWidgetRefresh(context);
             DroidMainService.StartService(context);
         } else {
             dispositivoConectado = intent.getAction().equals(Intent.ACTION_POWER_CONNECTED);
@@ -32,7 +35,10 @@ public class DroidSetStatusBatteryReceiver extends BroadcastReceiver {
             }
             if (dispositivoConectado || dispositivoDesconectado) {
                 try {
-                    DroidCommon.handlePowerConnectionChanged(context, intent.getAction());
+                    DroidCommon.refreshBatteryWidget(context);
+                    DroidCommon.AtualizaCorBateriaPorPreferenceValor(context);
+                    DroidWidget.scheduleNextWidgetRefresh(context);
+                    DroidMainService.StartService(context, intent.getAction());
                 } catch (Exception ex) {
                     Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
                 }

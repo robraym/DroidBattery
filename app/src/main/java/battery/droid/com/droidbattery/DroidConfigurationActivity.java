@@ -1,10 +1,12 @@
 package battery.droid.com.droidbattery;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -49,6 +51,7 @@ import java.util.Set;
  */
 
 public class DroidConfigurationActivity extends Activity {
+    private static final int REQUEST_POST_NOTIFICATIONS = 1201;
     private static final int COLOR_BACKGROUND = Color.rgb(0, 0, 0);
     private static final int COLOR_GROUP = Color.rgb(28, 29, 33);
     private static final int COLOR_GROUP_PRESSED = Color.rgb(34, 38, 50);
@@ -92,7 +95,18 @@ public class DroidConfigurationActivity extends Activity {
         Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()));
 
         buildSettingsScreen();
+        requestNotificationPermissionIfNeeded();
         DroidMainService.StartService(context);
+    }
+
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT < 33) {
+            return;
+        }
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_POST_NOTIFICATIONS);
     }
 
     private void buildSettingsScreen() {
