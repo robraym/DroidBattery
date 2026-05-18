@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/batteryIconWidgetRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:padding="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp">
+
+        <ImageView
+            android:id="@+id/batteryIconWidgetImage"
+            android:layout_width="42dp"
+            android:layout_height="72dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/widget_bateria_icone"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ic_widget_battery_1x1_cutout" />
+
+        <TextView
+            android:id="@+id/batteryIconWidgetPercent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="--%"
+            android:textColor="#FFFFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:shadowColor="#AA000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
+
+    </LinearLayout>
+
+</FrameLayout>

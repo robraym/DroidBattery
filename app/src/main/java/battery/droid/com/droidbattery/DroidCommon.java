@@ -408,6 +408,7 @@ public class DroidCommon {
             AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidWidget.class), views);
             PintarWidgetVisual(context, batteryText);
             PintarWidgetIcone(context, batteryText);
+            PintarWidgetIcone2(context, batteryText);
         } catch (Exception e) {}
     }
 
@@ -451,6 +452,26 @@ public class DroidCommon {
             views.setOnClickPendingIntent(R.id.batteryIconWidgetRoot, pi);
 
             AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidBatteryIconWidget.class), views);
+        } catch (Exception ex) {
+            Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+        }
+    }
+
+    private static void PintarWidgetIcone2(Context context, String batteryText) {
+        try {
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_battery_icon_layout2);
+
+            views.setTextViewText(R.id.batteryIconWidgetPercent, batteryText + "%");
+
+            Intent intent = new Intent(context, DroidBatteryIconWidget2.class);
+            intent.setAction("battery.droid.com.droidbattery.UPDATE");
+            int flags = android.os.Build.VERSION.SDK_INT >= 23 ?
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE :
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+            PendingIntent pi = PendingIntent.getBroadcast(context, 3, intent, flags);
+            views.setOnClickPendingIntent(R.id.batteryIconWidgetRoot, pi);
+
+            AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, DroidBatteryIconWidget2.class), views);
         } catch (Exception ex) {
             Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
         }

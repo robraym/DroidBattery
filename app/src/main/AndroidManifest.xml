@@ -86,6 +86,20 @@
         </receiver>
 
         <receiver
+            android:name=".DroidBatteryIconWidget2"
+            android:exported="true"
+            android:label="@string/widget_bateria_icone2">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="battery.droid.com.droidbattery.UPDATE" />
+                <action android:name="battery.droid.com.droidbattery.WIDGET_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_icon_info" />
+        </receiver>
+
+        <receiver
             android:name=".DroidSetStatusBatteryReceiver"
             android:enabled="true"
             android:exported="true"

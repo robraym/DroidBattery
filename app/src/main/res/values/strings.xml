@@ -24,9 +24,10 @@
     <string name="confirmar_restaurar_mensagens">Restaurar mensagens padrão?</string>
     <string name="descricao_confirmar_restaurar_mensagens">As mensagens personalizadas serão substituídas pelos textos originais.</string>
     <string name="mensagens_restauradas_padrao">Mensagens restauradas com sucesso</string>
-    <string name="widget_bateria">Bateria</string>
-    <string name="widget_bateria_visual">Bateria Icone e Texto</string>
-    <string name="widget_bateria_icone">Bateria Icone 1x1</string>
+    <string name="widget_bateria">Só %</string>
+    <string name="widget_bateria_visual">Completo</string>
+    <string name="widget_bateria_icone">Icone % meio</string>
+    <string name="widget_bateria_icone2">Icone % baixo</string>
     <string name="widget_carregando">Carregando</string>
     <string name="widget_bateria_baixa">Bateria baixa</string>
     <string name="monitor_bateria_ativo">Monitor de bateria ativo</string>
