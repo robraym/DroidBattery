@@ -17,7 +17,7 @@
         <ImageView
             android:id="@+id/batteryIconWidgetImage"
             android:layout_width="42dp"
-            android:layout_height="72dp"
+            android:layout_height="48dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/widget_bateria_icone"
             android:scaleType="fitCenter"
@@ -35,7 +35,7 @@
             android:maxLines="1"
             android:text="--%"
             android:textColor="#FFFFFFFF"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:shadowColor="#AA000000"
             android:shadowDx="0"

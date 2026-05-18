@@ -484,7 +484,7 @@ public class DroidCommon {
         if (percent >= 0 && percent <= 20) {
             return context.getString(R.string.widget_bateria_baixa);
         }
-        return context.getString(R.string.widget_bateria);
+        return context.getString(R.string.widget_bateria_status);
     }
 
     private static int parseBatteryPercent(String batteryText) {
