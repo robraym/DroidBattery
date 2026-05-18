@@ -12,6 +12,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.ArrayDeque;
 import java.util.Locale;
 import java.util.Set;
 
@@ -22,6 +23,9 @@ import java.util.Set;
 public class DroidMainService extends Service implements TextToSpeech.OnInitListener {
 
     private static TextToSpeech tts;
+    private static boolean ttsReady = false;
+    private static final Object ttsLock = new Object();
+    private static final ArrayDeque<String> pendingSpeech = new ArrayDeque<>();
     private Context context;
 
 
@@ -32,10 +36,7 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
 
     @Override
     public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            tts.setLanguage(Locale.getDefault());
-            // Aqui você pode definir uma velocidade se quiser: tts.setSpeechRate(1.0f);
-        }
+        handleTtsInit(status);
     }
 
     @Override
@@ -55,8 +56,7 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
         try {
             try {
                 context = getBaseContext();
-                tts = new TextToSpeech(context, this);
-                tts.setLanguage(Locale.getDefault());
+                initializeTextToSpeech(context, this);
             } catch (Exception ex) {
                 Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
             }
@@ -86,6 +86,11 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
             if (tts != null) {
                 tts.stop();
                 tts.shutdown();
+            }
+            synchronized (ttsLock) {
+                tts = null;
+                ttsReady = false;
+                pendingSpeech.clear();
             }
             Intent broadcastIntent = new Intent("battery.droid.com.droidbattery.ACTION_RESTART_SERVICE");
             sendBroadcast(broadcastIntent);
@@ -193,12 +198,95 @@ public class DroidMainService extends Service implements TextToSpeech.OnInitList
 
     private static void Fala(Context context, String texto) {
         if (DroidCommon.SinteseVozNaoPerturbeAtivado(context)) {
+            speakSafely(context, texto);
+        }
+    }
+
+    private static void speakSafely(Context context, String texto) {
+        if (texto == null || texto.trim().isEmpty()) {
+            return;
+        }
+
+        Toast.makeText(context, texto, Toast.LENGTH_SHORT).show();
+        synchronized (ttsLock) {
+            pendingSpeech.add(texto);
             if (tts == null) {
-                DroidSpeechHelper.speak(context, texto);
+                initializeTextToSpeech(context.getApplicationContext(), status -> {
+                    handleTtsInit(status);
+                    if (status != TextToSpeech.SUCCESS) {
+                        DroidSpeechHelper.speak(context.getApplicationContext(), texto);
+                    }
+                });
+                return;
+            }
+
+            if (!ttsReady) {
+                Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " aguardando TTS inicializar");
+                return;
+            }
+        }
+        flushPendingSpeech();
+    }
+
+    private static void initializeTextToSpeech(Context context, TextToSpeech.OnInitListener listener) {
+        synchronized (ttsLock) {
+            if (tts != null) {
+                return;
+            }
+            ttsReady = false;
+            tts = new TextToSpeech(context.getApplicationContext(), listener);
+        }
+    }
+
+    private static void handleTtsInit(int status) {
+        synchronized (ttsLock) {
+            if (status == TextToSpeech.SUCCESS && tts != null) {
+                int languageResult = tts.setLanguage(Locale.getDefault());
+                if (languageResult == TextToSpeech.LANG_MISSING_DATA ||
+                        languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    tts.setLanguage(new Locale("pt", "BR"));
+                }
+                ttsReady = true;
             } else {
-                Toast.makeText(context, texto, Toast.LENGTH_SHORT).show();
-                // Usamos null no Listener se não for dar stopSelf imediatamente
-                tts.speak(texto, TextToSpeech.QUEUE_ADD, null, "ID_" + System.currentTimeMillis());
+                Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " TTS init falhou: " + status);
+                ttsReady = false;
+                pendingSpeech.clear();
+                if (tts != null) {
+                    tts.shutdown();
+                    tts = null;
+                }
+            }
+        }
+        flushPendingSpeech();
+    }
+
+    private static void flushPendingSpeech() {
+        while (true) {
+            String texto;
+            synchronized (ttsLock) {
+                if (!ttsReady || tts == null || pendingSpeech.isEmpty()) {
+                    return;
+                }
+                texto = pendingSpeech.poll();
+            }
+
+            try {
+                int result = tts.speak(texto, TextToSpeech.QUEUE_ADD, null, "ID_" + System.currentTimeMillis());
+                if (result == TextToSpeech.ERROR) {
+                    Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " TTS speak retornou ERROR");
+                    synchronized (ttsLock) {
+                        pendingSpeech.addFirst(texto);
+                        ttsReady = false;
+                    }
+                    return;
+                }
+            } catch (Exception ex) {
+                Log.d(DroidCommon.TAG, DroidCommon.getLogTagWithMethod(new Throwable()) + " Erro: " + ex.getMessage());
+                synchronized (ttsLock) {
+                    pendingSpeech.addFirst(texto);
+                    ttsReady = false;
+                }
+                return;
             }
         }
     }
