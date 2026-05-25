@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -562,16 +561,7 @@ public class DroidConfigurationActivity extends Activity {
     }
 
     private String getPercentSummary() {
-        Set<String> selected = new HashSet<>();
-        try {
-            selected.addAll(DroidCommon.GetList(context, "multiSelectPreference"));
-        } catch (Exception ex) {
-            selected.add("80");
-        }
-
-        if (selected.isEmpty()) {
-            selected.add("80");
-        }
+        Set<String> selected = getSavedPercentSelection();
 
         List<Integer> values = new ArrayList<>();
         for (String item : selected) {
@@ -600,21 +590,9 @@ public class DroidConfigurationActivity extends Activity {
     private void showPercentDialog() {
         final String[] entries = getResources().getStringArray(R.array.arrayPercentualAtingido);
         final String[] values = getResources().getStringArray(R.array.arrayPercentualAtingidoValues);
-        final Set<String> selected = new HashSet<>();
-        try {
-            selected.addAll(DroidCommon.GetList(context, "multiSelectPreference"));
-        } catch (Exception ex) {
-            selected.add("80");
-        }
-        if (selected.isEmpty()) {
-            selected.add("80");
-        }
+        final Set<String> selected = getSavedPercentSelection();
 
-        boolean[] checked = new boolean[values.length];
-        for (int i = 0; i < values.length; i++) {
-            checked[i] = selected.contains(values[i]);
-        }
-
+        final List<TextView> percentChips = new ArrayList<>();
         final Dialog dialog = new Dialog(this);
         LinearLayout container = createDialogContainer();
 
@@ -623,41 +601,86 @@ public class DroidConfigurationActivity extends Activity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        TextView hintView = createDialogMessage("Escolha os níveis que devem gerar alerta.");
+        TextView hintView = createDialogMessage("Escolha um ou mais níveis para receber aviso de voz.");
         hintView.setPadding(0, dp(4), 0, dp(14));
         container.addView(hintView, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        ScrollView listScroll = new ScrollView(this);
-        listScroll.setFillViewport(false);
-        LinearLayout list = new LinearLayout(this);
-        list.setOrientation(LinearLayout.VERTICAL);
-        listScroll.addView(list, new ScrollView.LayoutParams(
-                ScrollView.LayoutParams.MATCH_PARENT,
-                ScrollView.LayoutParams.WRAP_CONTENT));
+        final TextView selectAllButton = createPercentSelectAllButton();
+        updatePercentSelectAllButton(selectAllButton, selected.size() == values.length);
+        LinearLayout selectAllRow = new LinearLayout(this);
+        selectAllRow.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        selectAllRow.addView(selectAllButton, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                dp(36)));
+        container.addView(selectAllRow, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        for (int i = 0; i < values.length; i++) {
-            final String value = values[i];
-            CheckBox checkBox = createPercentCheckBox(entries[i], checked[i]);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        selected.add(value);
-                    } else {
-                        selected.remove(value);
-                    }
-                }
-            });
-            list.addView(checkBox, new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    dp(48)));
+        LinearLayout chipPanel = new LinearLayout(this);
+        chipPanel.setOrientation(LinearLayout.VERTICAL);
+        chipPanel.setPadding(dp(8), dp(8), dp(8), dp(8));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            chipPanel.setBackground(createRoundedBackground(COLOR_DIALOG_PICKER, 22));
+        } else {
+            chipPanel.setBackgroundColor(COLOR_DIALOG_PICKER);
         }
 
-        container.addView(listScroll, new LinearLayout.LayoutParams(
+        int columns = 4;
+        for (int i = 0; i < values.length; i += columns) {
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(Gravity.CENTER);
+
+            for (int column = 0; column < columns && i + column < values.length; column++) {
+                final String value = values[i + column];
+                final TextView chip = createPercentChip(entries[i + column], selected.contains(value));
+                chip.setTag(value);
+                chip.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (selected.contains(value)) {
+                            selected.remove(value);
+                        } else {
+                            selected.add(value);
+                        }
+                        updatePercentChipState(chip, selected.contains(value));
+                        updatePercentSelectAllButton(selectAllButton, selected.size() == values.length);
+                    }
+                });
+                percentChips.add(chip);
+
+                LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(0, dp(42), 1f);
+                chipParams.setMargins(dp(4), dp(4), dp(4), dp(4));
+                row.addView(chip, chipParams);
+            }
+
+            chipPanel.addView(row, new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+        }
+
+        container.addView(chipPanel, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(390)));
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        selectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean selectAll = selected.size() != values.length;
+                selected.clear();
+                if (selectAll) {
+                    Collections.addAll(selected, values);
+                }
+
+                for (TextView chip : percentChips) {
+                    Object value = chip.getTag();
+                    updatePercentChipState(chip, value != null && selected.contains(value.toString()));
+                }
+                updatePercentSelectAllButton(selectAllButton, selectAll);
+            }
+        });
 
         LinearLayout actions = createDialogActions();
         TextView cancel = createDialogButton(getString(R.string.cancel));
@@ -702,6 +725,16 @@ public class DroidConfigurationActivity extends Activity {
         }
         DroidCommon.SetList(context, "multiSelectPreference", valuesToSave);
         refreshSummaries();
+    }
+
+    private Set<String> getSavedPercentSelection() {
+        Set<String> selected = new HashSet<>();
+        try {
+            selected.addAll(DroidCommon.GetList(context, "multiSelectPreference"));
+        } catch (Exception ex) {
+            Log.e(DroidCommon.TAG, "Erro ao ler percentuais de alerta: " + ex.getMessage());
+        }
+        return selected;
     }
 
     private void showEditTextDialog(final String key, String title, String defaultValue) {
@@ -941,25 +974,46 @@ public class DroidConfigurationActivity extends Activity {
         return actions;
     }
 
-    private CheckBox createPercentCheckBox(String text, boolean checked) {
-        CheckBox checkBox = new CheckBox(this);
-        checkBox.setText(text);
-        checkBox.setChecked(checked);
-        checkBox.setTextColor(COLOR_PRIMARY_TEXT);
-        checkBox.setTypeface(Typeface.DEFAULT);
-        checkBox.setGravity(Gravity.CENTER_VERTICAL);
-        checkBox.setPadding(0, 0, 0, 0);
-        checkBox.setButtonTintList(new ColorStateList(
-                new int[][]{
-                        new int[]{android.R.attr.state_checked},
-                        new int[]{}
-                },
-                new int[]{
-                        COLOR_BLUE,
-                        Color.rgb(178, 180, 188)
-                }));
-        setTextSize(checkBox, 18);
-        return checkBox;
+    private TextView createPercentChip(String text, boolean checked) {
+        TextView chip = new TextView(this);
+        chip.setText(text);
+        chip.setGravity(Gravity.CENTER);
+        chip.setTypeface(Typeface.DEFAULT_BOLD);
+        chip.setSingleLine(true);
+        setTextSize(chip, 16);
+        updatePercentChipState(chip, checked);
+        return chip;
+    }
+
+    private TextView createPercentSelectAllButton() {
+        TextView button = new TextView(this);
+        button.setGravity(Gravity.CENTER);
+        button.setTypeface(Typeface.DEFAULT_BOLD);
+        button.setPadding(dp(14), 0, dp(14), 0);
+        setTextSize(button, 14);
+        return button;
+    }
+
+    private void updatePercentChipState(TextView chip, boolean checked) {
+        chip.setSelected(checked);
+        chip.setTextColor(checked ? COLOR_PRIMARY_TEXT : COLOR_SECONDARY_TEXT);
+        int backgroundColor = checked ? COLOR_BLUE : COLOR_GROUP_PRESSED;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            chip.setBackground(createRoundedBackground(backgroundColor, 21));
+        } else {
+            chip.setBackgroundColor(backgroundColor);
+        }
+    }
+
+    private void updatePercentSelectAllButton(TextView button, boolean allSelected) {
+        button.setText(allSelected ? "Limpar seleção" : "Selecionar todos");
+        button.setTextColor(allSelected ? COLOR_SECONDARY_TEXT : COLOR_BLUE);
+        int backgroundColor = allSelected ? COLOR_GROUP_PRESSED : Color.rgb(39, 47, 67);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            button.setBackground(createRoundedBackground(backgroundColor, 18));
+        } else {
+            button.setBackgroundColor(backgroundColor);
+        }
     }
 
     private void showStyledDialog(Dialog dialog, View contentView) {

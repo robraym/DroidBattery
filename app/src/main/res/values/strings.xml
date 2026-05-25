@@ -93,9 +93,7 @@
         <item>100</item>
     </string-array>
 
-    <string-array name="arrayPercentualAtingidoDefaultValues">
-        <item>80</item>
-    </string-array>
+    <string-array name="arrayPercentualAtingidoDefaultValues" />
 
     <string-array name="arrayCoresTextoPercentualBateria">
         <item>Preta</item>
